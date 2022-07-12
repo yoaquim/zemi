@@ -1,17 +1,19 @@
 import express, {Request, Response} from 'express'
 import request from 'supertest'
-import batey, {BateyRoute} from '../src/batey'
+import batey, {BateyRoute, BateyMethod} from '../src/batey'
+
+const {GET, POST} = BateyMethod
 
 async function testGET(path: string, routes: Array<BateyRoute>) {
     const app = express()
-    app.use('/', batey({routes}))
+    app.use('/', batey(routes))
     return request(app).get(path)
 }
 
 async function testPOST(path: string, data: object, routes: Array<BateyRoute>) {
     const app = express()
     app.use(express.json())
-    app.use('/', batey({routes}))
+    app.use('/', batey(routes))
     return request(app).post(path).set('Accept', 'application/json').send(data)
 }
 
@@ -20,8 +22,7 @@ describe('batey can build GET methods', () => {
         const routes: Array<BateyRoute> = [
             {
                 path: '/pets',
-                method: 'get',
-                handler: function (request: Request, response: Response) {
+                [GET]: function (request: Request, response: Response) {
                     response.status(200).json({
                         dogs: ['Kali', 'Ahkila'],
                         cats: ['Fufu', 'Meow']
@@ -40,8 +41,7 @@ describe('batey can build GET methods', () => {
         const routes: Array<BateyRoute> = [
             {
                 path: '/pets/:id',
-                method: 'get',
-                handler: function (request: Request, response: Response) {
+                [GET]: function (request: Request, response: Response) {
                     const id = request.params.id
                     response.status(200).json({
                         id,
@@ -61,28 +61,21 @@ describe('batey can build GET methods', () => {
         const routes: Array<BateyRoute> = [
             {
                 path: '/pets',
-                method: 'get',
-                handler: function (request: Request, response: Response) {
+                [GET]: function (request: Request, response: Response) {
                     response.status(200).json({pets: ['dogs', 'cats']})
                 },
                 routes: [
                     {
-                        routes: [
-                            {
-                                path: '/dogs',
-                                method: 'get',
-                                handler: function (request: Request, response: Response) {
-                                    response.status(200).json({data: ['Kali', 'Ahkila'],})
-                                },
-                            },
-                            {
-                                path: '/cats',
-                                method: 'get',
-                                handler: function (request: Request, response: Response) {
-                                    response.status(200).json({data: ['Fufu', 'Meow']})
-                                },
-                            }
-                        ]
+                        path: '/dogs',
+                        [GET]: function (request: Request, response: Response) {
+                            response.status(200).json({data: ['Kali', 'Ahkila'],})
+                        },
+                    },
+                    {
+                        path: '/cats',
+                        [GET]: function (request: Request, response: Response) {
+                            response.status(200).json({data: ['Fufu', 'Meow']})
+                        },
                     }
                 ]
             }
@@ -105,24 +98,18 @@ describe('batey can build GET methods', () => {
         const routes: Array<BateyRoute> = [
             {
                 path: '/pets/:id',
-                method: 'get',
-                handler: function (request: Request, response: Response) {
+                [GET]: function (request: Request, response: Response) {
                     response.status(200).json({pets: ['dogs', 'cats']})
                 },
                 routes: [
                     {
-                        routes: [
-                            {
-                                path: '/dogs',
-                                method: 'get',
-                                handler: function (request: Request, response: Response) {
-                                    response.status(200).json({
-                                        parent_id: request.params.id,
-                                        data: ['Kali', 'Ahkila'],
-                                    })
-                                },
-                            }
-                        ]
+                        path: '/dogs',
+                        [GET]: function (request: Request, response: Response) {
+                            response.status(200).json({
+                                parent_id: request.params.id,
+                                data: ['Kali', 'Ahkila'],
+                            })
+                        },
                     }
                 ]
             }
@@ -141,8 +128,7 @@ describe('batey can build POST methods', () => {
         const routes: Array<BateyRoute> = [
             {
                 path: '/new-pet',
-                method: 'post',
-                handler: function (request: Request, response: Response) {
+                [POST]: function (request: Request, response: Response) {
                     const {new_pet} = request.body
                     response.status(200).json({new_pet})
                 },
@@ -158,8 +144,7 @@ describe('batey can build POST methods', () => {
         const routes: Array<BateyRoute> = [
             {
                 path: '/new-pet/:id',
-                method: 'post',
-                handler: function (request: Request, response: Response) {
+                [POST]: function (request: Request, response: Response) {
                     const {new_pet} = request.body
                     const {id} = request.params
                     response.status(200).json({new_pet, id})

@@ -1,33 +1,40 @@
 import express, {Request, Response} from 'express'
-import bodyParser from 'body-parser'
-import batey, {BateyRoute} from './batey'
+import batey, {BateyRoute, BateyMethod} from './batey'
 
+const {GET, POST} = BateyMethod
 const routes: Array<BateyRoute> = [
     {
         path: '/pets/:id',
-        method: 'get',
-        handler: function (request: Request, response: Response) {
-            const id: string = request.params.id
-            response.status(200).json({
-                id,
-                dogs: ['Kali', 'Ahkila'],
-                cats: ['Fufu', 'Meow']
-            })
-        }
-    },
-    {
-        path: '/new-pet',
-        method: 'post',
-        handler: function (request: Request, response: Response) {
-            const {pet} = request.body
-            response.status(200).json({
-                new_pet: pet,
-            })
+        [GET]: function (request: Request, response: Response) {
+            const {id} = request.params
+            const query = request.query
+            response.status(200).json({id, pets: ['dogs', 'cats'], query})
         },
+        [POST]: function (request: Request, response: Response) {
+            const {id} = request.params
+            const {new_pet} = request.body
+            response.status(200).json({id, new_pet})
+        },
+        routes: [
+            {
+                path: '/cats',
+                [GET]: function (request: Request, response: Response) {
+                    const {id} = request.params
+                    response.status(200).json({id, data: ['Kali', 'Ahkila']})
+                }
+            },
+            {
+                path: '/dogs',
+                [GET]: function (request: Request, response: Response) {
+                    const {id} = request.params
+                    response.status(200).json({id, data: ['Fufu', 'Meow']})
+                }
+            },
+        ]
     }
 ]
 
 const app = express()
 app.use(express.json())
-app.use('/', batey({routes}))
+app.use('/', batey(routes))
 app.listen(8000, (): void => console.log(`----- SERVER START -----`))

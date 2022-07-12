@@ -1,23 +1,23 @@
 import {Router, RequestHandler} from 'express'
 
-export type BateyMethod = 'get' | 'post' | 'put' | 'delete' | 'options'
+export enum BateyMethod {
+    GET = "get",
+    POST = "post",
+    PUT = "put",
+    DELETE = "delete",
+    OPTIONS = "options",
+}
 
-export interface BateyRoute {
+export type BateyRoute = { [method in BateyMethod]?: RequestHandler } & {
     path: string
-    method: BateyMethod
-    handler: RequestHandler
-    routes?: Array<BateyDefinition>
+    routes?: Array<BateyRoute>
 }
 
-export interface BateyDefinition {
-    routes: Array<BateyRoute>
-}
-
-export default function Batey(definition: BateyDefinition) {
+export default function Batey(routes: Array<BateyRoute>) {
     const router: Router = Router({mergeParams: true})
-    definition.routes.map((route: BateyRoute) => {
-        router[route.method](route.path, route.handler)
-        route.routes?.map((bateyDefinition: BateyDefinition) => router.use(route.path, Batey(bateyDefinition)))
+    routes.forEach((route: BateyRoute) => {
+        Object.values(BateyMethod).forEach((method: string) => route[method] && router[method](route.path, route[method]))
+        route.routes && router.use(route.path, Batey(route.routes))
     })
     return router
 }
