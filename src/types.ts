@@ -7,6 +7,16 @@ interface RouteParams {
     path: string,
     middleware?: Array<ZemiRequestHandler>
     routes?: Array<ZemiRoute>,
+    description?: string,
+    openApi?: {
+        description?: string,
+        responses?: Array<{
+            [statusCode: string]: {
+                description?: string,
+                [prop: string]: any
+            }
+        }>,
+    }
 }
 
 export enum ZemiMethod {
