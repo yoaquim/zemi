@@ -1,10 +1,20 @@
-import express, {Request, Response} from 'express'
-import batey, {BateyRoute, BateyMethod} from './batey'
+import express, {NextFunction, Request, Response} from 'express'
+import batey, {Route, Method} from './batey'
 
-const {GET, POST} = BateyMethod
-const routes: Array<BateyRoute> = [
+const {GET, POST} = Method
+const routes: Array<Route> = [
     {
         path: '/pets/:id',
+        middleware: [
+            function (request: Request, response: Response, next: NextFunction) {
+                console.log('QUERY:', JSON.stringify(request.query))
+                next()
+            },
+            function (request: Request, response: Response, next: NextFunction) {
+                console.log('BODY:', JSON.stringify(request.body))
+                next()
+            }
+        ],
         [GET]: function (request: Request, response: Response) {
             const {id} = request.params
             const query = request.query
@@ -17,14 +27,20 @@ const routes: Array<BateyRoute> = [
         },
         routes: [
             {
-                path: '/cats',
+                path: '/dogs',
+                middleware: [
+                    function (request: Request, response: Response, next: NextFunction) {
+                        console.log('PARAMS:', JSON.stringify(request.params))
+                        next()
+                    },
+                ],
                 [GET]: function (request: Request, response: Response) {
                     const {id} = request.params
                     response.status(200).json({id, data: ['Kali', 'Ahkila']})
                 }
             },
             {
-                path: '/dogs',
+                path: '/cats',
                 [GET]: function (request: Request, response: Response) {
                     const {id} = request.params
                     response.status(200).json({id, data: ['Fufu', 'Meow']})
