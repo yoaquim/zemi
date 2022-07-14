@@ -1,56 +1,41 @@
-import express, {NextFunction, Request, Response} from 'express'
-import batey, {Route, Method} from './batey'
+import express, {NextFunction, Response} from 'express'
+import zemi from './core'
+import {ZemiRoute, ZemiMethod, ZemiRequest} from './types'
 
-const {GET, POST} = Method
-const routes: Array<Route> = [
+const {GET, POST} = ZemiMethod
+const routes: Array<ZemiRoute> = [
     {
+        name: 'pets',
         path: '/pets/:id',
         middleware: [
-            function (request: Request, response: Response, next: NextFunction) {
-                console.log('QUERY:', JSON.stringify(request.query))
+            function (request: ZemiRequest, response: Response, next: NextFunction) {
+                console.log('NAMED ROUTES:', request.namedRoutes)
                 next()
             },
-            function (request: Request, response: Response, next: NextFunction) {
-                console.log('BODY:', JSON.stringify(request.body))
-                next()
-            }
         ],
-        [GET]: function (request: Request, response: Response) {
-            const {id} = request.params
-            const query = request.query
-            response.status(200).json({id, pets: ['dogs', 'cats'], query})
-        },
-        [POST]: function (request: Request, response: Response) {
-            const {id} = request.params
-            const {new_pet} = request.body
-            response.status(200).json({id, new_pet})
+        [GET]: function (request: ZemiRequest, response: Response) {
+            response.status(200).json(request.namedRoutes)
         },
         routes: [
             {
+                name: 'dogs',
                 path: '/dogs',
-                middleware: [
-                    function (request: Request, response: Response, next: NextFunction) {
-                        console.log('PARAMS:', JSON.stringify(request.params))
-                        next()
-                    },
-                ],
-                [GET]: function (request: Request, response: Response) {
-                    const {id} = request.params
-                    response.status(200).json({id, data: ['Kali', 'Ahkila']})
-                }
             },
             {
+                name: 'cats',
                 path: '/cats',
-                [GET]: function (request: Request, response: Response) {
-                    const {id} = request.params
-                    response.status(200).json({id, data: ['Fufu', 'Meow']})
-                }
-            },
+                routes: [
+                    {
+                        name: 'tigers',
+                        path: '/tiggers'
+                    }
+                ]
+            }
         ]
     }
 ]
 
 const app = express()
 app.use(express.json())
-app.use('/', batey(routes))
+app.use('/', zemi(routes))
 app.listen(8000, (): void => console.log(`----- SERVER START -----`))

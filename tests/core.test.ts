@@ -1,25 +1,26 @@
 import express, {NextFunction, Request, Response} from 'express'
 import request from 'supertest'
-import batey, {Route, Method} from '../src/batey'
+import {ZemiRoute, ZemiMethod, ZemiRequest} from '../src/types'
+import zemi from '../src/core'
 
-const {GET, POST} = Method
+const {GET, POST} = ZemiMethod
 
-async function testGET(path: string, routes: Array<Route>) {
+async function testGET(path: string, routes: Array<ZemiRoute>) {
     const app = express()
-    app.use('/', batey(routes))
+    app.use('/', zemi(routes))
     return request(app).get(path)
 }
 
-async function testPOST(path: string, data: object, routes: Array<Route>) {
+async function testPOST(path: string, data: object, routes: Array<ZemiRoute>) {
     const app = express()
     app.use(express.json())
-    app.use('/', batey(routes))
+    app.use('/', zemi(routes))
     return request(app).post(path).set('Accept', 'application/json').send(data)
 }
 
-describe('batey core functionality can...', () => {
+describe('zemi core functionality can...', () => {
     test('create a route from the definition passed to it.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/pets',
                 [GET]: function (request: Request, response: Response) {
@@ -38,7 +39,7 @@ describe('batey core functionality can...', () => {
     })
 
     test('access params defined in the path via the request.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/pets/:id',
                 [GET]: function (request: Request, response: Response) {
@@ -59,7 +60,7 @@ describe('batey core functionality can...', () => {
 
 
     test('access query object in the path via the request.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/pets',
                 [GET]: function (request: Request, response: Response) {
@@ -78,7 +79,7 @@ describe('batey core functionality can...', () => {
     })
 
     test('create a route with child routes when specified in the definition.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/pets',
                 [GET]: function (request: Request, response: Response) {
@@ -115,7 +116,7 @@ describe('batey core functionality can...', () => {
     })
 
     test('merge params from parents routes into child routes and allows access to them.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/pets/:id',
                 [GET]: function (request: Request, response: Response) {
@@ -142,7 +143,7 @@ describe('batey core functionality can...', () => {
     })
 
     test('create a POST route that receives data.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/new-pet',
                 [POST]: function (request: Request, response: Response) {
@@ -158,7 +159,7 @@ describe('batey core functionality can...', () => {
     })
 
     test('create a POST route that receives data and can access request params.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/new-pet/:id',
                 [POST]: function (request: Request, response: Response) {
@@ -176,7 +177,7 @@ describe('batey core functionality can...', () => {
     })
 
     test('create a POST route and a GET route that both work.', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/new-pet/:id',
                 [POST]: function (request: Request, response: Response) {
@@ -203,7 +204,7 @@ describe('batey core functionality can...', () => {
     })
 
     test('build nested routes without having a handler at the current level', async () => {
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/pets/',
                 routes: [
@@ -224,14 +225,50 @@ describe('batey core functionality can...', () => {
         const notFoundResponse = await testGET('/pets', routes)
         expect(notFoundResponse.status).toEqual(404)
     })
+
+    test('stored named routes in ZemiRequest', async () => {
+        const routes: Array<ZemiRoute> = [
+            {
+                name: 'pets',
+                path: '/pets/:id',
+                [GET]: function (request: ZemiRequest, response: Response) {
+                    response.status(200).json(request.namedRoutes)
+                },
+                routes: [
+                    {
+                        name: 'dogs',
+                        path: '/dogs',
+                    },
+                    {
+                        name: 'cats',
+                        path: '/cats',
+                        routes: [
+                            {
+                                name: 'tigers',
+                                path: '/tiggers'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+
+        const response = await testGET('/pets/99', routes)
+        expect(response.status).toEqual(200)
+        expect(response.body).toEqual({
+            'pets': '/pets/:id',
+            'pets-dogs': '/pets/:id/dogs',
+            'pets-cats': '/pets/:id/cats',
+            'pets-cats-tigers': '/pets/:id/cats/tiggers',
+        })
+    })
 })
 
-describe('batey middleware functionalit can...', () => {
-
+describe('zemi middleware functionality can...', () => {
     test('attach middleware to router before routes are defined', async () => {
         const mockOne = jest.fn()
         const mockTwo = jest.fn()
-        const routes: Array<Route> = [
+        const routes: Array<ZemiRoute> = [
             {
                 path: '/pets',
                 middleware: [
