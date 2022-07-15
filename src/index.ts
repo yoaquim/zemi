@@ -1,41 +1,73 @@
-import express, {NextFunction, Response} from 'express'
-import zemi from './core'
-import {ZemiRoute, ZemiMethod, ZemiRequest} from './types'
+import express, {NextFunction} from 'express'
+import {ZemiRoute, ZemiMethod, ZemiRequest, ZemiResponse} from './core.types'
+import {ZemiOpenApiDoc} from './openapi.types'
+import Zemi from './core'
+import {ZemiOpenApiDocGenerator} from './openapi'
 
 const {GET, POST} = ZemiMethod
 const routes: Array<ZemiRoute> = [
     {
-        name: 'pets',
-        path: '/pets/:id',
-        middleware: [
-            function (request: ZemiRequest, response: Response, next: NextFunction) {
-                console.log('NAMED ROUTES:', request.namedRoutes)
-                next()
+        name: 'petsById',
+        path: '/pets/{breed|string}/{id|number}',
+        [GET]: {
+            description: "returns all pets",
+            tags: ['pets'],
+            responses: {
+                '200': {
+                    description: 'successful operation'
+                },
+                '400': {
+                    description: 'pet not found'
+                }
             },
-        ],
-        [GET]: function (request: ZemiRequest, response: Response) {
-            response.status(200).json(request.namedRoutes)
+            handler: function (request: ZemiRequest, response: ZemiResponse) {
+                response.status(200).json({id: request.params.id})
+            }
         },
         routes: [
             {
-                name: 'dogs',
-                path: '/dogs',
-            },
-            {
-                name: 'cats',
-                path: '/cats',
-                routes: [
-                    {
-                        name: 'tigers',
-                        path: '/tiggers'
+                name: 'details',
+                path: '/details',
+                [GET]: {
+                    description: "returns all pets",
+                    tags: ['pets', 'details'],
+                    responses: {
+                        '200': {
+                            description: 'successful operation'
+                        }
+                    },
+                    handler: function (request: ZemiRequest, response: ZemiResponse) {
+                        const {id, breed} = request.params
+                        response.status(200).json({id, breed})
                     }
-                ]
+                }
             }
         ]
     }
 ]
 
+const doc: ZemiOpenApiDoc = {
+    openapi: '3.0.0',
+    info: {
+        description: 'API for pet store management',
+        version: '1.0',
+        title: 'Pet Store API',
+        contact: {
+            email: 'hello@petstore.com'
+        }
+    },
+    tags: [
+        {name: 'pets', description: 'related to pets'},
+        {name: 'details', description: 'related to store details'}
+    ],
+    servers: [
+        {url: 'https://api.bestpetstore.com/v1'}
+    ]
+}
+
+ZemiOpenApiDocGenerator({doc, routes, options: {fileName: 'petstore-open-api'}})
+
 const app = express()
 app.use(express.json())
-app.use('/', zemi(routes))
+app.use('/', Zemi(routes))
 app.listen(8000, (): void => console.log(`----- SERVER START -----`))
