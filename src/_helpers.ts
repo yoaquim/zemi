@@ -1,6 +1,6 @@
-import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute} from './core.types'
-import {NamedRoute} from './helpers.types'
-import {ZemiOpenApiParamDoc} from './openapi.types'
+import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute} from './types/core.types'
+import {NamedRoute} from './types/helpers.types'
+import {ZemiOpenApiParamDoc} from './types/openapi.types'
 
 export function buildNamedRoutes(routes: Array<ZemiRoute>, prefix?: NamedRoute): Record<string, string> {
     const namedRoutes = routes.map((r: ZemiRoute) => {

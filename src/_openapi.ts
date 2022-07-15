@@ -1,8 +1,8 @@
 import {promises as fsPromises} from 'fs'
 import {join} from 'path'
-import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute} from './core.types'
-import {ZemiOpenApiDoc, ZemiOpenApiOptions, ZemiOpenApiParamDoc} from './openapi.types'
-import {paramPathToOpenApiParamObj, paramPathToValidPath} from './helpers'
+import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute} from './types/core.types'
+import {ZemiOpenApiDoc, ZemiOpenApiOptions, ZemiOpenApiParamDoc} from './types/openapi.types'
+import {paramPathToOpenApiParamObj, paramPathToValidPath} from './_helpers'
 
 async function asyncWriteFile(filename: string, data: any) {
     try {
@@ -12,15 +12,6 @@ async function asyncWriteFile(filename: string, data: any) {
         console.log(err)
         return `Something went wrong when trying to write ${filename}`
     }
-}
-
-export async function ZemiOpenApiDocGenerator({doc, routes, options}: { doc: ZemiOpenApiDoc, routes: Array<ZemiRoute>, options?: ZemiOpenApiOptions }) {
-    const pathDocs: Array<Record<string, any>> = buildPathDocs(routes)
-    const paths = Object.assign({}, ...pathDocs)
-    const document = Object.assign({}, doc, {paths})
-    const filename = `${options.fileName}.json` || 'openapi.json'
-    asyncWriteFile(filename, JSON.stringify(document)).then(() => console.log(`Finished writing out ${filename} OpenAPI spec.`))
-    return document
 }
 
 function buildPathDocs(routes: Array<ZemiRoute>, parentPath?: string): Array<Record<string, any>> {
@@ -46,4 +37,13 @@ function buildPathDocs(routes: Array<ZemiRoute>, parentPath?: string): Array<Rec
             return mine
         }
     })
+}
+
+export default async function ZemiOpenApiDocGenerator({doc, routes, options}: { doc: ZemiOpenApiDoc, routes: Array<ZemiRoute>, options?: ZemiOpenApiOptions }) {
+    const pathDocs: Array<Record<string, any>> = buildPathDocs(routes)
+    const paths = Object.assign({}, ...pathDocs)
+    const document = Object.assign({}, doc, {paths})
+    const filename = `${options && options.fileName}.json` || 'openapi.json'
+    asyncWriteFile(filename, JSON.stringify(document)).then(() => console.log(`Finished writing out ${filename} OpenAPI spec.`))
+    return document
 }

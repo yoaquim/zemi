@@ -1,7 +1,7 @@
 import express, {NextFunction, Request, Response} from 'express'
 import request from 'supertest'
-import {ZemiRoute, ZemiMethod, ZemiRequest, ZemiResponse} from '../src/core.types'
-import zemi from '../src/core'
+import {ZemiRoute, ZemiMethod, ZemiRequest, ZemiResponse} from '../src/types/core.types'
+import zemi from '../src/_core'
 
 const {GET, POST} = ZemiMethod
 

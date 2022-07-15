@@ -1,7 +1,5 @@
-import {buildNamedRoutes, buildResponsesPerNamedRoute, paramPathToOpenApiParamObj} from '../src/helpers'
-import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute} from '../src/core.types'
-import {NextFunction} from 'express'
-import {paramPathToValidPath} from '../dist/helpers'
+import {buildNamedRoutes, buildResponsesPerNamedRoute, paramPathToOpenApiParamObj, paramPathToValidPath} from '../src/_helpers'
+import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute} from '../src/types/core.types'
 
 const {GET, POST} = ZemiMethod
 

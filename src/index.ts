@@ -1,10 +1,10 @@
-import express, {NextFunction} from 'express'
-import {ZemiRoute, ZemiMethod, ZemiRequest, ZemiResponse} from './core.types'
-import {ZemiOpenApiDoc} from './openapi.types'
-import Zemi from './core'
-import {ZemiOpenApiDocGenerator} from './openapi'
+import express from 'express'
+import {ZemiRoute, ZemiMethod, ZemiRequest, ZemiResponse} from './types/core.types'
+import {ZemiOpenApiDoc} from './types/openapi.types'
+import Zemi from './_core'
+import ZemiOpenApiDocGenerator from './_openapi'
 
-const {GET, POST} = ZemiMethod
+const {GET} = ZemiMethod
 const routes: Array<ZemiRoute> = [
     {
         name: 'petsById',

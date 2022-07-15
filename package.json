@@ -1,7 +1,7 @@
 {
   "name": "zemi",
   "version": "1.0.0",
-  "description": "Data-drive routing for typescript.",
+  "description": "Data-driven routing for Express.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
