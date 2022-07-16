@@ -47,6 +47,6 @@ export default async function ZemiOpenApiDocGenerator({doc, routes, options}: { 
     console.log('OpenAPI spec:\n\n')
     console.log(JSON.stringify(document))
     console.log('\n----------\n')
-    await asyncWriteFile(fsPromises.writeFile, whereToWrite, JSON.stringify(document)).then(() => console.log(`\nFinished writing out OpenAPI spec to ${whereToWrite}.\n`))
+    await asyncWriteFile(fsPromises.writeFile, whereToWrite, JSON.stringify(document)).then(() => console.log(`\nFinished writing OpenAPI spec to ${whereToWrite}.\n`))
     return document
 }

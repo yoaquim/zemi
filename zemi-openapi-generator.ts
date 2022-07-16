@@ -1,7 +1,6 @@
 import {ZemiOpenApiDoc} from './src/types/openapi.types'
 import ZemiOpenApiDocGenerator from './src/_openapi'
 import routes from './src/routes'
-import {join} from 'path'
 
 const doc: ZemiOpenApiDoc = {
     openapi: '3.0.0',
@@ -22,4 +21,4 @@ const doc: ZemiOpenApiDoc = {
     ]
 }
 
-ZemiOpenApiDocGenerator({doc, routes, options:{path: join(__dirname, './src/feo.json')}})
+ZemiOpenApiDocGenerator({doc, routes})
