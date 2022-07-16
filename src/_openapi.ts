@@ -1,18 +1,8 @@
+import {join, dirname} from 'path'
 import {promises as fsPromises} from 'fs'
-import {join} from 'path'
 import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute} from './types/core.types'
 import {ZemiOpenApiDoc, ZemiOpenApiOptions, ZemiOpenApiParamDoc} from './types/openapi.types'
 import {paramPathToOpenApiParamObj, paramPathToValidPath} from './_helpers'
-
-async function asyncWriteFile(filename: string, data: any) {
-    try {
-        await fsPromises.writeFile(join(__dirname, filename), data, {flag: 'w',})
-        return await fsPromises.readFile(join(__dirname, filename), 'utf-8',)
-    } catch (err) {
-        console.log(err)
-        return `Something went wrong when trying to write ${filename}`
-    }
-}
 
 function buildPathDocs(routes: Array<ZemiRoute>, parentPath?: string): Array<Record<string, any>> {
     return routes.flatMap((route: ZemiRoute) => {
@@ -39,11 +29,24 @@ function buildPathDocs(routes: Array<ZemiRoute>, parentPath?: string): Array<Rec
     })
 }
 
-export default async function ZemiOpenApiDocGenerator({doc, routes, options}: { doc: ZemiOpenApiDoc, routes: Array<ZemiRoute>, options?: ZemiOpenApiOptions }) {
+export async function asyncWriteFile(writeFile: (path: string, data: any, options: object) => void, path: string, data: any) {
+    try {
+        await writeFile(path, data, {flag: 'w',})
+    } catch (err) {
+        console.log(`-- Something went wrong when trying to write ${path}:`)
+        console.log(err)
+    }
+}
+
+export default async function ZemiOpenApiDocGenerator({doc, routes, options}: { doc: ZemiOpenApiDoc, routes: Array<ZemiRoute>, options?: ZemiOpenApiOptions }): Promise<ZemiOpenApiDoc> {
+    const whereToWrite = options && options.path ? options.path : join(dirname(require.main.filename), 'openapi.json')
     const pathDocs: Array<Record<string, any>> = buildPathDocs(routes)
     const paths = Object.assign({}, ...pathDocs)
     const document = Object.assign({}, doc, {paths})
-    const filename = `${options && options.fileName}.json` || 'openapi.json'
-    asyncWriteFile(filename, JSON.stringify(document)).then(() => console.log(`Finished writing out ${filename} OpenAPI spec.`))
+    console.log('\n----------\n')
+    console.log('OpenAPI spec:\n\n')
+    console.log(JSON.stringify(document))
+    console.log('\n----------\n')
+    await asyncWriteFile(fsPromises.writeFile, whereToWrite, JSON.stringify(document)).then(() => console.log(`\nFinished writing out OpenAPI spec to ${whereToWrite}.\n`))
     return document
 }

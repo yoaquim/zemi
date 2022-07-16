@@ -58,5 +58,5 @@ export interface ZemiOpenApiParamDoc {
 }
 
 export interface ZemiOpenApiOptions {
-    fileName: string
+    path: string
 }

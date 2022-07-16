@@ -1,11 +1,24 @@
-import ZemiOpenApiDocGenerator from '../src/_openapi'
+import ZemiOpenApiDocGenerator, {asyncWriteFile} from '../src/_openapi'
 import {ZemiRequest, ZemiResponse, ZemiRoute, ZemiMethod} from '../src/types/core.types'
 import {ZemiOpenApiDoc} from '../src/types/openapi.types'
 
-const {GET} = ZemiMethod
+//============================================
+// MOCKS
+//============================================
+import fs from 'fs'
+
+jest.mock('fs', () => {
+    return {
+        promises: {
+            writeFile: jest.fn()
+        }
+    }
+})
+//============================================
 
 describe('ZemiOpenApiDocGenerator can...', () => {
     test('generate an OpenApi spec', async () => {
+        const {GET} = ZemiMethod
         const doc: ZemiOpenApiDoc = {
             openapi: '3.0.0',
             info: {
@@ -161,5 +174,31 @@ describe('ZemiOpenApiDocGenerator can...', () => {
                 }
             }
         })
+    })
+})
+
+describe('asyncWriteFile can...', () => {
+    test('write file to specified path.', async () => {
+        const mockWriteFile = <(path: string, data: any, options: object) => void> jest.fn()
+        const path = '/foo/bar/baz/openapi.json'
+        const data = {foo: 'bar'}
+        await asyncWriteFile(mockWriteFile, path, data)
+        expect(mockWriteFile).toHaveBeenCalledWith(path, data, {flag: 'w'})
+    })
+
+    test('console log when it fails to write a file.', async () => {
+        const logger = console.log
+        console.log = jest.fn()
+        const err = new Error('FAILED')
+        const mockWriteFile = <(path: string, data: any, options: object) => void> jest.fn(() => {
+            throw err
+        })
+
+        const path = '/failed/to/write'
+        await asyncWriteFile(mockWriteFile, path, {})
+
+        expect(console.log).toHaveBeenCalledWith(`-- Something went wrong when trying to write ${path}:`)
+        expect(console.log).toHaveBeenCalledWith(err)
+        console.log = logger
     })
 })

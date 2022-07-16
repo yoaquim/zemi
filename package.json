@@ -25,7 +25,8 @@
   },
   "scripts": {
     "start": "tsc && node .",
-    "test": "jest"
+    "test": "jest",
+    "generate-openapi-doc": "npx ts-node zemi-openapi-generator.ts"
   },
   "author": "Yoaquim Cintrón",
   "license": "ISC"
