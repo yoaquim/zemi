@@ -261,14 +261,14 @@ describe('zemi core functionality can...', () => {
         expect(notFoundResponse.status).toEqual(404)
     })
 
-    test('store named routes in ZemiRequest', async () => {
+    test('store route defintiions in ZemiRequest', async () => {
         const routes: Array<ZemiRoute> = [
             {
                 name: 'pets',
                 path: '/pets/:id',
                 [GET]: {
                     handler: function (request: ZemiRequest, response: Response) {
-                        response.status(200).json(request.namedRoutes)
+                        response.status(200).json(request.routeDefinitions)
                     }
                 },
                 routes: [
@@ -293,10 +293,26 @@ describe('zemi core functionality can...', () => {
         const response = await testGET('/pets/99', routes)
         expect(response.status).toEqual(200)
         expect(response.body).toEqual({
-            'pets': '/pets/:id',
-            'pets-dogs': '/pets/:id/dogs',
-            'pets-cats': '/pets/:id/cats',
-            'pets-cats-tigers': '/pets/:id/cats/tiggers',
+            'pets': {
+                name: 'pets',
+                path: '/pets/:id',
+                parameters: ['id']
+            },
+            'pets-dogs': {
+                name: 'pets-dogs',
+                path: '/pets/:id/dogs',
+                parameters: ['id']
+            },
+            'pets-cats': {
+                name: 'pets-cats',
+                path: '/pets/:id/cats',
+                parameters: ['id']
+            },
+            'pets-cats-tigers': {
+                name: 'pets-cats-tigers',
+                path: '/pets/:id/cats/tiggers',
+                parameters: ['id']
+            },
         })
     })
 
@@ -329,7 +345,7 @@ describe('zemi core functionality can...', () => {
                         }
                     },
                     handler: function (request: ZemiRequest, response: ZemiResponse) {
-                        response.status(200).json(request.namedRoutes)
+                        response.status(200).json({})
                     }
                 },
                 routes: [

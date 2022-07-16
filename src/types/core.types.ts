@@ -23,7 +23,7 @@ export enum ZemiMethod {
 }
 
 export interface ZemiRequest extends Request {
-    namedRoutes: Record<string, string>
+    routeDefinitions: Record<string, ZemiRouteDefinition>
     allowedResponseHttpCodes: Record<string, Record<string, Array<string>>>
 }
 
@@ -34,7 +34,7 @@ export interface ZemiRouteDefinition {
     name: string
     path: string
     parameters: Array<string>
-    reverse: (o: object) => string
+    reverse: (parameterValues: object) => string
 }
 
 export type ZemiRequestHandler = (request: ZemiRequest, response: ZemiResponse, next: NextFunction, routeDef: ZemiRouteDefinition) => void

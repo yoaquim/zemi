@@ -19,13 +19,11 @@ export default [
                 }
             },
             handler: function (request: ZemiRequest, response: ZemiResponse, __: NextFunction, routeDef: ZemiRouteDefinition) {
-                const {id} = request.params
-                const {name, path, parameters} = routeDef
+                const routeDefinitions = request.routeDefinitions
+                const petsByIdDetails = routeDefinitions['petsById-details']
+                const {name, path, parameters, reverse} = petsByIdDetails
                 response.status(200).json({
-                    name,
-                    path,
-                    parameters,
-                    reverse: routeDef.reverse({breed: 'dog', id})
+                    name, path, parameters, reverse: reverse({breed: 'dog', id: 66})
                 })
             }
         },

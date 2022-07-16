@@ -1,29 +1,10 @@
-import {buildNamedRoutes, buildResponsesPerNamedRoute, buildRouteDef, paramPathToOpenApiParamObj, paramPathToValidPath} from '../src/_helpers'
+import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef, paramPathToOpenApiParamObj, paramPathToValidPath} from '../src/_helpers'
 import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute} from '../src/types/core.types'
 
 const {GET, POST} = ZemiMethod
 
-describe('buildNamedRoutes can...', () => {
-    test('return an object with the name of the route as the key, and the path of the route as the value', () => {
-        const routes: Array<ZemiRoute> = [
-            {
-                name: 'pets',
-                path: '/pets/:id',
-            },
-            {
-                name: 'humans',
-                path: '/humans',
-            },
-        ]
-
-        const result = buildNamedRoutes(routes)
-        expect(result).toEqual({
-            'pets': '/pets/:id',
-            'humans': '/humans',
-        })
-    })
-
-    test('return named routes for all routes and nested routes', () => {
+describe('buildRouteDefinitions can...', () => {
+    test('return routeDefinitions for all routes and nested routes', () => {
         const routes: Array<ZemiRoute> = [
             {
                 name: 'pets',
@@ -41,7 +22,7 @@ describe('buildNamedRoutes can...', () => {
             },
             {
                 name: 'humans',
-                path: '/humans?foo=bar&baz=tur',
+                path: '/humans',
             },
             {
                 name: 'plants',
@@ -58,15 +39,57 @@ describe('buildNamedRoutes can...', () => {
             }
         ]
 
-        const result = buildNamedRoutes(routes)
+        const result = buildRouteDefinitions(routes)
+        expect(result['pets'].reverse({id: 77})).toBe('/pets/77')
+        expect(result['pets-dogs'].reverse({id: 77})).toBe('/pets/77/dogs')
+        expect(result['pets-cats'].reverse({id: 77})).toBe('/pets/77/cats')
+        expect(result['humans'].reverse({})).toBe('/humans')
+        expect(result['plants'].reverse({})).toBe('/plants')
+        expect(result['plants-carnivore'].reverse({name: 'maneater'})).toBe('/plants/carnivore/maneater')
+        expect(result['plants-carnivore-dangerous'].reverse({name: 'maneater'})).toBe('/plants/carnivore/maneater/dangerous')
         expect(result).toEqual({
-            'pets': '/pets/:id',
-            'pets-dogs': '/pets/:id/dogs',
-            'pets-cats': '/pets/:id/cats',
-            'humans': '/humans?foo=bar&baz=tur',
-            'plants': '/plants',
-            'plants-carnivore': '/plants/carnivore/:name',
-            'plants-carnivore-dangerous': '/plants/carnivore/:name/dangerous',
+            'pets': {
+                name: 'pets',
+                path: '/pets/:id',
+                parameters: ['id'],
+                reverse: expect.any(Function)
+            },
+            'pets-dogs': {
+                name: 'pets-dogs',
+                path: '/pets/:id/dogs',
+                parameters: ['id'],
+                reverse: expect.any(Function)
+            },
+            'pets-cats': {
+                name: 'pets-cats',
+                path: '/pets/:id/cats',
+                parameters: ['id'],
+                reverse: expect.any(Function)
+            },
+            'humans': {
+                name: 'humans',
+                path: '/humans',
+                parameters: [],
+                reverse: expect.any(Function)
+            },
+            'plants': {
+                name: 'plants',
+                path: '/plants',
+                parameters: [],
+                reverse: expect.any(Function)
+            },
+            'plants-carnivore': {
+                name: 'plants-carnivore',
+                path: '/plants/carnivore/:name',
+                parameters: ['name'],
+                reverse: expect.any(Function)
+            },
+            'plants-carnivore-dangerous': {
+                name: 'plants-carnivore-dangerous',
+                path: '/plants/carnivore/:name/dangerous',
+                parameters: ['name'],
+                reverse: expect.any(Function)
+            },
         })
     })
 })
@@ -101,7 +124,7 @@ describe('buildResponsesPerNamedRoute can...', () => {
                         }
                     },
                     handler: function (request: ZemiRequest, response: ZemiResponse) {
-                        response.status(200).json(request.namedRoutes)
+                        response.status(200).json(request.routeDefinitions)
                     }
                 },
                 routes: [
@@ -219,6 +242,6 @@ describe('buildRouteDef can...', () => {
         expect(path).toEqual(p)
         expect(name).toEqual(n)
         expect(parameters).toEqual(['animal', 'id'])
-        expect(reverse({animal:'dog', id:'99'})).toEqual('/pets/dog/available/99')
+        expect(reverse({animal: 'dog', id: '99'})).toEqual('/pets/dog/available/99')
     })
 })

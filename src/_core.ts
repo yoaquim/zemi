@@ -1,12 +1,12 @@
 import {NextFunction, RequestHandler, Router} from 'express'
-import {ZemiRequest, ZemiRequestHandler, ZemiMethod, ZemiRoute, ZemiResponse, ZemiHandlerDefinition, ZemiRouteDefinition} from './types/core.types'
-import {buildNamedRoutes, buildResponsesPerNamedRoute, buildRouteDef, paramPathToValidPath} from './_helpers'
+import {ZemiRequest, ZemiMethod, ZemiRoute, ZemiResponse, ZemiHandlerDefinition, ZemiRouteDefinition} from './types/core.types'
+import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef, paramPathToValidPath} from './_helpers'
 
 export default function Zemi(routes: Array<ZemiRoute>): Router {
     const router: Router = Router({mergeParams: true})
 
     router.use(function (request: ZemiRequest, response: ZemiResponse, next: NextFunction) {
-            request.namedRoutes = buildNamedRoutes(routes)
+            request.routeDefinitions = buildRouteDefinitions(routes)
             request.allowedResponseHttpCodes = buildResponsesPerNamedRoute(routes)
             next()
         }

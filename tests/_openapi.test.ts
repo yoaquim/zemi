@@ -18,6 +18,7 @@ jest.mock('fs', () => {
 
 describe('ZemiOpenApiDocGenerator can...', () => {
     test('generate an OpenApi spec', async () => {
+        console.log = jest.fn()
         const {GET} = ZemiMethod
         const doc: ZemiOpenApiDoc = {
             openapi: '3.0.0',
@@ -179,6 +180,7 @@ describe('ZemiOpenApiDocGenerator can...', () => {
 
 describe('asyncWriteFile can...', () => {
     test('write file to specified path.', async () => {
+        console.log = jest.fn()
         const mockWriteFile = <(path: string, data: any, options: object) => void> jest.fn()
         const path = '/foo/bar/baz/openapi.json'
         const data = {foo: 'bar'}

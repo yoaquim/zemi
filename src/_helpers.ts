@@ -2,15 +2,17 @@ import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute, ZemiRouteDefinition} from 
 import {NamedRoute} from './types/helpers.types'
 import {ZemiOpenApiParamDoc} from './types/openapi.types'
 
-export function buildNamedRoutes(routes: Array<ZemiRoute>, prefix?: NamedRoute): Record<string, string> {
+export function buildRouteDefinitions(routes: Array<ZemiRoute>, prefix?: NamedRoute): Record<string, ZemiRouteDefinition> {
     const namedRoutes = routes.map((r: ZemiRoute) => {
         if (r.name) {
             const name: string = prefix ? `${prefix.name}-${r.name}` : r.name
-            const path: string = prefix ? `${prefix.path}${r.path}` : r.path
+            const dirtyPath: string = prefix ? `${prefix.path}${r.path}` : r.path
+            const path: string = paramPathToValidPath(dirtyPath)
 
-            const mine = {[name]: path}
+            const mine: Record<string, ZemiRouteDefinition> = {[name]: buildRouteDef(path, name)}
             if (r.routes) {
-                return Object.assign({}, buildNamedRoutes(r.routes, {name, path}), mine)
+                const toReturn: Record<string, ZemiRouteDefinition> = Object.assign({}, buildRouteDefinitions(r.routes, {name, path}), mine)
+                return toReturn
             } else {
                 return mine
             }
@@ -42,7 +44,6 @@ export function buildResponsesPerNamedRoute(routes: Array<ZemiRoute>, prefix?: s
     })
     return Object.assign({}, ...namedRoutes)
 }
-
 
 export function paramPathToValidPath(path: string, useBrackets: boolean = false): string {
     const pathBits: Array<string> = path.split('/').map(p => {
