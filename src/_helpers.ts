@@ -1,4 +1,4 @@
-import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute} from './types/core.types'
+import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute, ZemiRouteDefinition} from './types/core.types'
 import {NamedRoute} from './types/helpers.types'
 import {ZemiOpenApiParamDoc} from './types/openapi.types'
 
@@ -72,4 +72,19 @@ export function paramPathToOpenApiParamObj(path: string): Array<ZemiOpenApiParam
             }
         }
     })
+}
+
+export function buildRouteDef(path: string, name: string): ZemiRouteDefinition {
+    const pathArray: Array<string> = path.split('/')
+    const parameters: Array<string> = pathArray.filter(p => p.includes(':')).map(p => p.split(':')[1])
+    const reverse = (paramValues: Record<string, string | number>): string => {
+        const pathParts = pathArray.map((p: string) => {
+            if (p.includes(':')) {
+                const key = p.split(':')[1]
+                return paramValues[key]
+            } else return p
+        })
+        return pathParts.join('/')
+    }
+    return {name, path, parameters, reverse}
 }

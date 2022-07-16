@@ -1,6 +1,6 @@
-import {NextFunction, Router} from 'express'
-import {ZemiRequest, ZemiRequestHandler, ZemiMethod, ZemiRoute, ZemiResponse, ZemiHandlerDefinition} from './types/core.types'
-import {buildNamedRoutes, buildResponsesPerNamedRoute, paramPathToValidPath} from './_helpers'
+import {NextFunction, RequestHandler, Router} from 'express'
+import {ZemiRequest, ZemiRequestHandler, ZemiMethod, ZemiRoute, ZemiResponse, ZemiHandlerDefinition, ZemiRouteDefinition} from './types/core.types'
+import {buildNamedRoutes, buildResponsesPerNamedRoute, buildRouteDef, paramPathToValidPath} from './_helpers'
 
 export default function Zemi(routes: Array<ZemiRoute>): Router {
     const router: Router = Router({mergeParams: true})
@@ -15,13 +15,14 @@ export default function Zemi(routes: Array<ZemiRoute>): Router {
     routes.forEach((route: ZemiRoute) => {
         const path: string = paramPathToValidPath(route.path)
 
-        route.middleware && route.middleware.forEach((middleware: ZemiRequestHandler) => router.use(middleware))
+        route.middleware && route.middleware.forEach((middleware: RequestHandler) => router.use(middleware))
 
         const methods = Object.values(ZemiMethod)
         methods.forEach((method: string) => {
             const handlerDefinition: ZemiHandlerDefinition = route[method]
             if (handlerDefinition && handlerDefinition.handler) {
-                router[method](path, (request: ZemiRequest, response: ZemiResponse, next: NextFunction) => handlerDefinition.handler(request, response, next))
+                const routeDef: ZemiRouteDefinition = buildRouteDef(path, route.name)
+                router[method](path, (request: ZemiRequest, response: ZemiResponse, next: NextFunction) => handlerDefinition.handler(request, response, next, routeDef))
             }
         })
 

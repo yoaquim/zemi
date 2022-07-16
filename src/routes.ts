@@ -1,4 +1,5 @@
-import {ZemiMethod, ZemiRequest, ZemiResponse} from './types/core.types'
+import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRouteDefinition} from './types/core.types'
+import {NextFunction} from 'express'
 
 const {GET} = ZemiMethod
 
@@ -17,8 +18,15 @@ export default [
                     description: 'pet not found'
                 }
             },
-            handler: function (request: ZemiRequest, response: ZemiResponse) {
-                response.status(200).json({id: request.params.id})
+            handler: function (request: ZemiRequest, response: ZemiResponse, __: NextFunction, routeDef: ZemiRouteDefinition) {
+                const {id} = request.params
+                const {name, path, parameters} = routeDef
+                response.status(200).json({
+                    name,
+                    path,
+                    parameters,
+                    reverse: routeDef.reverse({breed: 'dog', id})
+                })
             }
         },
         routes: [

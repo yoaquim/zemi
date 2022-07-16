@@ -9,7 +9,7 @@ type MethodIndexableHandlerDefinition = {
 interface RouteParams {
     name: string,
     path: string,
-    middleware?: Array<ZemiRequestHandler>
+    middleware?: Array<RequestHandler>
     routes?: Array<ZemiRoute>,
     description?: string,
 }
@@ -30,8 +30,13 @@ export interface ZemiRequest extends Request {
 export interface ZemiResponse extends Response {
 }
 
-export interface ZemiRequestHandler extends RequestHandler {
-    (req: ZemiRequest, res: ZemiResponse, next: NextFunction,): void
+export interface ZemiRouteDefinition {
+    name: string
+    path: string
+    parameters: Array<string>
+    reverse: (o: object) => string
 }
+
+export type ZemiRequestHandler = (request: ZemiRequest, response: ZemiResponse, next: NextFunction, routeDef: ZemiRouteDefinition) => void
 
 export type ZemiRoute = MethodIndexableHandlerDefinition & RouteParams
