@@ -7,7 +7,7 @@ export function buildRouteDefinitions(routes: Array<ZemiRoute>, prefix?: NamedRo
         if (r.name) {
             const name: string = prefix ? `${prefix.name}-${r.name}` : r.name
             const dirtyPath: string = prefix ? `${prefix.path}${r.path}` : r.path
-            const path: string = paramPathToValidPath(dirtyPath)
+            const path: string = paramPathToValidExpressPath(dirtyPath)
 
             const mine: Record<string, ZemiRouteDefinition> = {[name]: buildRouteDef(path, name)}
             if (r.routes) {
@@ -45,12 +45,23 @@ export function buildResponsesPerNamedRoute(routes: Array<ZemiRoute>, prefix?: s
     return Object.assign({}, ...namedRoutes)
 }
 
-export function paramPathToValidPath(path: string, useBrackets: boolean = false): string {
+export function paramPathToValidExpressPath(path: string): string {
     const pathBits: Array<string> = path.split('/').map(p => {
         if (p[0] === '{' && p[p.length - 1] === '}') {
             const paramKey = p.split('{')[1].split('|')[0]
-            if (useBrackets) return `{${paramKey}}`
-            else return `:${paramKey}`
+            return `:${paramKey}`
+        } else {
+            return p
+        }
+    })
+    return pathBits.join('/')
+}
+
+export function paramPathToOpenApiPath(path: string): string {
+    const pathBits: Array<string> = path.split('/').map(p => {
+        if (p[0] === '{' && p[p.length - 1] === '}') {
+            const paramKey = p.split('{')[1].split('|')[0]
+            return `{${paramKey}}`
         } else {
             return p
         }

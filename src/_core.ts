@@ -1,6 +1,6 @@
 import {NextFunction, RequestHandler, Router} from 'express'
 import {ZemiRequest, ZemiMethod, ZemiRoute, ZemiResponse, ZemiHandlerDefinition, ZemiRouteDefinition} from './types/core.types'
-import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef, paramPathToValidPath} from './_helpers'
+import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef, paramPathToValidExpressPath} from './_helpers'
 
 export default function Zemi(routes: Array<ZemiRoute>): Router {
     const router: Router = Router({mergeParams: true})
@@ -13,7 +13,7 @@ export default function Zemi(routes: Array<ZemiRoute>): Router {
     )
 
     routes.forEach((route: ZemiRoute) => {
-        const path: string = paramPathToValidPath(route.path)
+        const path: string = paramPathToValidExpressPath(route.path)
 
         route.middleware && route.middleware.forEach((middleware: RequestHandler) => router.use(middleware))
 

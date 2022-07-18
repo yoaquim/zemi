@@ -1,15 +1,25 @@
-import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRouteDefinition} from './types/core.types'
+import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute, ZemiRouteDefinition} from './types/core.types'
 import {NextFunction} from 'express'
 
 const {GET} = ZemiMethod
 
-export default [
+const routes: Array<ZemiRoute> = [
     {
         name: 'petsById',
         path: '/pets/{breed|string}/{id|number}',
         [GET]: {
             description: "returns all pets",
             tags: ['pets'],
+            parameters: [
+                {
+                    name: 'check',
+                    in: 'query',
+                    schema: {
+                        type: 'string'
+                    },
+                    required: false
+                }
+            ],
             responses: {
                 '200': {
                     description: 'successful operation'
@@ -48,3 +58,5 @@ export default [
         ]
     }
 ]
+
+export default routes

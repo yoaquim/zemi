@@ -7,79 +7,82 @@ import {OpenApiDoc} from '../src/types/openapi.types'
 //============================================
 import fs from 'fs'
 
+const mockWriteFile = jest.fn()
 jest.mock('fs', () => {
     return {
         promises: {
-            writeFile: jest.fn()
+            // have to mock this way to `mockWriteFile` can be referenced and passed the the args
+            writeFile: (...args) => mockWriteFile(...args)
         }
     }
 })
 //============================================
 
 describe('ZemiOpenApiDocGenerator can...', () => {
-    test('generate an OpenApi spec', async () => {
-        console.log = jest.fn()
-        const {GET} = ZemiMethod
-        const doc: OpenApiDoc = {
-            openapi: '3.0.0',
-            info: {
-                description: 'API for pet store management',
-                version: '1.0',
-                title: 'Pet Store API',
-                contact: {
-                    email: 'hello@petstore.com'
-                }
-            },
-            tags: [
-                {name: 'pets', description: 'related to pets'},
-                {name: 'details', description: 'related to store details'}
-            ],
-            servers: [
-                {url: 'https://api.bestpetstore.com/v1'}
-            ]
-        }
+    const {GET} = ZemiMethod
 
-        const routes: Array<ZemiRoute> = [
-            {
-                name: 'petsById',
-                path: '/pets/{breed|string}/{id|number}',
-                [GET]: {
-                    description: 'returns all pets',
-                    tags: ['pets'],
-                    responses: {
-                        '200': {
-                            description: 'successful operation'
-                        },
-                        '400': {
-                            description: 'pet not found'
-                        }
+    const doc: OpenApiDoc = {
+        openapi: '3.0.0',
+        info: {
+            description: 'API for pet store management',
+            version: '1.0',
+            title: 'Pet Store API',
+            contact: {
+                email: 'hello@petstore.com'
+            }
+        },
+        tags: [
+            {name: 'pets', description: 'related to pets'},
+            {name: 'details', description: 'related to store details'}
+        ],
+        servers: [
+            {url: 'https://api.bestpetstore.com/v1'}
+        ]
+    }
+
+    const routes: Array<ZemiRoute> = [
+        {
+            name: 'petsById',
+            path: '/pets/{breed|string}/{id|number}',
+            [GET]: {
+                description: 'returns all pets',
+                tags: ['pets'],
+                responses: {
+                    '200': {
+                        description: 'successful operation'
                     },
-                    handler: function (request: ZemiRequest, response: ZemiResponse) {
-                        response.status(200).json({id: request.params.id})
+                    '400': {
+                        description: 'pet not found'
                     }
                 },
-                routes: [
-                    {
-                        name: 'details',
-                        path: '/details',
-                        [GET]: {
-                            description: "returns all pets",
-                            tags: ['pets', 'details'],
-                            responses: {
-                                '200': {
-                                    description: 'successful operation'
-                                }
-                            },
-                            handler: function (request: ZemiRequest, response: ZemiResponse) {
-                                const {id, breed} = request.params
-                                response.status(200).json({id, breed})
+                handler: function (request: ZemiRequest, response: ZemiResponse) {
+                    response.status(200).json({id: request.params.id})
+                }
+            },
+            routes: [
+                {
+                    name: 'details',
+                    path: '/details',
+                    [GET]: {
+                        description: "returns all pets",
+                        tags: ['pets', 'details'],
+                        responses: {
+                            '200': {
+                                description: 'successful operation'
                             }
+                        },
+                        handler: function (request: ZemiRequest, response: ZemiResponse) {
+                            const {id, breed} = request.params
+                            response.status(200).json({id, breed})
                         }
                     }
-                ]
-            }
-        ]
+                }
+            ]
+        }
+    ]
 
+    test('generate an OpenApi spec', async () => {
+        console.log = jest.fn()
         const result = await ZemiOpenApiDocGenerator({doc, routes})
         expect(result).toEqual({
             "openapi": "3.0.0",
@@ -175,6 +178,11 @@ describe('ZemiOpenApiDocGenerator can...', () => {
                 }
             }
         })
+    })
+
+    test('write to a specified path', async () => {
+        await ZemiOpenApiDocGenerator({doc, routes, options: {path: '/TEST/PATH'}})
+        expect(mockWriteFile.mock.calls[0][0]).toEqual('/TEST/PATH')
     })
 })
 

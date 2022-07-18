@@ -1,4 +1,4 @@
-import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef} from '../src/_helpers'
+import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef, paramPathToOpenApiParamObject, paramPathToValidExpressPath, paramPathToOpenApiPath} from '../src/_helpers'
 import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute} from '../src/types/core.types'
 
 const {GET, POST} = ZemiMethod
@@ -195,5 +195,61 @@ describe('buildRouteDef can...', () => {
         expect(name).toEqual(n)
         expect(parameters).toEqual(['animal', 'id'])
         expect(reverse({animal: 'dog', id: '99'})).toEqual('/pets/dog/available/99')
+    })
+})
+
+
+describe('paramPathToValidExpressPath can...', () => {
+    test("convert a zemi path with params into a valid Express URL path with ':' prepended params", () => {
+        const url: string = '/pets/{breed|string}/{id|number}/details'
+        const result = paramPathToValidExpressPath(url)
+        expect(result).toEqual('/pets/:breed/:id/details')
+    })
+
+    // test("convert a zemi path with params into an OpenAPI path with '{}' encapsulated params", () => {
+    //     const url: string = '/pets/{breed|string}/{id|number}/details'
+    //     const result = paramPathToValidPath(url)
+    //     expect(result).toEqual('/pets/{breed}/{id}/details')
+    // })
+
+    test("return a valid Express URL when no params present", () => {
+        const url: string = '/pets/dogs/breeds'
+        const result = paramPathToValidExpressPath(url)
+        expect(result).toEqual('/pets/dogs/breeds')
+    })
+})
+
+describe('paramPathToOpenApiPath can...', () => {
+    test("convert a zemi path with params into an OpenAPI path with '{}' encapsulated params", () => {
+        const url: string = '/pets/{breed|string}/{id|number}/details'
+        const result = paramPathToOpenApiPath(url)
+        expect(result).toEqual('/pets/{breed}/{id}/details')
+    })
+
+    test("return a valid Express URL when no params present", () => {
+        const url: string = '/pets/dogs/breeds'
+        const result = paramPathToOpenApiPath(url)
+        expect(result).toEqual('/pets/dogs/breeds')
+    })
+})
+
+describe('paramPathToOpenApiParamObject can...', () => {
+    test("convert a zemi path with params into an OpenAPI Params object", () => {
+        const url: string = '/pets/{breed|string}/{id|number}/details'
+        const result = paramPathToOpenApiParamObject(url)
+        expect(result).toEqual([
+            {
+                name: 'breed',
+                in: 'path',
+                required: true,
+                schema: {type: 'string'}
+            },
+            {
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: {type: 'number'}
+            }
+        ])
     })
 })
