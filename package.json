@@ -1,7 +1,7 @@
 {
   "name": "zemi",
   "version": "1.0.0",
-  "description": "Data-driven routing for Express.",
+  "description": "Zemi provides data-driven and reverse routing capabilities for Express. It also provides OpenAPI support, allowing you to specify and autogenerate an OpenAPI spec.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -27,8 +27,7 @@
   "scripts": {
     "start": "tsc && node .",
     "test": "jest",
-    "prettify": "npx prettier --write .",
-    "generate-openapi-doc": "npx ts-node zemi-openapi-generator.ts"
+    "prettify": "npx prettier --write ."
   },
   "author": "Yoaquim Cintrón",
   "license": "ISC"
