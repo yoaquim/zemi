@@ -1,8 +1,8 @@
-import {ZemiOpenApiDoc} from './src/types/openapi.types'
+import {OpenApiDoc} from './src/types/openapi.types'
 import ZemiOpenApiDocGenerator from './src/_openapi'
 import routes from './src/routes'
 
-const doc: ZemiOpenApiDoc = {
+const doc: OpenApiDoc = {
     openapi: '3.0.0',
     info: {
         description: 'API for pet store management',

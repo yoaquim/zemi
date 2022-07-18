@@ -1,6 +1,6 @@
 import {ZemiHandlerDefinition, ZemiMethod, ZemiRoute, ZemiRouteDefinition} from './types/core.types'
 import {NamedRoute} from './types/helpers.types'
-import {ZemiOpenApiParamDoc} from './types/openapi.types'
+import {OpenApiParameterObject} from './types/openapi.types'
 
 export function buildRouteDefinitions(routes: Array<ZemiRoute>, prefix?: NamedRoute): Record<string, ZemiRouteDefinition> {
     const namedRoutes = routes.map((r: ZemiRoute) => {
@@ -58,19 +58,16 @@ export function paramPathToValidPath(path: string, useBrackets: boolean = false)
     return pathBits.join('/')
 }
 
-export function paramPathToOpenApiParamObj(path: string): Array<ZemiOpenApiParamDoc> {
+export function paramPathToOpenApiParamObject(path: string): Array<OpenApiParameterObject> {
     const paramBits: Array<string> = path.split('/').filter(p => p[0] === '{' && p[p.length - 1] === '}')
     const noBracks: Array<string> = paramBits.map(pb => pb.substring(1, pb.length - 1))
     const paramsSeparatedList: Array<Array<string>> = noBracks.map(p => p.split('|'))
-    return paramsSeparatedList.map(([name, type, format]: Array<string>) => {
+    return paramsSeparatedList.map(([name, type]: Array<string>) => {
         return {
             name,
             in: 'path',
-            required: true,
-            schema: {
-                type,
-                format,
-            }
+            schema: {type},
+            required: true
         }
     })
 }

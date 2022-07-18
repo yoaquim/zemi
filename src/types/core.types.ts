@@ -1,17 +1,14 @@
 import {RequestHandler, NextFunction, Request, Response} from 'express'
-import {ZemiOpenApiPathDoc} from './openapi.types'
+import {OpenApiOperationObject, OpenApiParameterObject, OpenApiPathItemDefinitionObject} from './openapi.types'
 
-export type ZemiHandlerDefinition = { handler: ZemiRequestHandler } & ZemiOpenApiPathDoc
-type MethodIndexableHandlerDefinition = {
-    [method in ZemiMethod]?: ZemiHandlerDefinition
-}
+type ZemiMethodIndexableHandlerDefinition = { [method in ZemiMethod]?: ZemiHandlerDefinition }
 
-interface RouteParams {
+type ZemiRouteOptions = OpenApiPathItemDefinitionObject & {
     name: string,
     path: string,
     middleware?: Array<RequestHandler>
     routes?: Array<ZemiRoute>,
-    description?: string,
+    parameters?: Array<OpenApiParameterObject>
 }
 
 export enum ZemiMethod {
@@ -39,4 +36,10 @@ export interface ZemiRouteDefinition {
 
 export type ZemiRequestHandler = (request: ZemiRequest, response: ZemiResponse, next: NextFunction, routeDef: ZemiRouteDefinition) => void
 
-export type ZemiRoute = MethodIndexableHandlerDefinition & RouteParams
+export type ZemiHandlerDefinition = { handler: ZemiRequestHandler } & OpenApiOperationObject
+
+export type ZemiRoute = ZemiMethodIndexableHandlerDefinition & ZemiRouteOptions
+
+export interface ZemiOpenApiDocGenerationOptions {
+    path: string
+}

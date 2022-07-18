@@ -1,6 +1,6 @@
 import ZemiOpenApiDocGenerator, {asyncWriteFile} from '../src/_openapi'
 import {ZemiRequest, ZemiResponse, ZemiRoute, ZemiMethod} from '../src/types/core.types'
-import {ZemiOpenApiDoc} from '../src/types/openapi.types'
+import {OpenApiDoc} from '../src/types/openapi.types'
 
 //============================================
 // MOCKS
@@ -20,7 +20,7 @@ describe('ZemiOpenApiDocGenerator can...', () => {
     test('generate an OpenApi spec', async () => {
         console.log = jest.fn()
         const {GET} = ZemiMethod
-        const doc: ZemiOpenApiDoc = {
+        const doc: OpenApiDoc = {
             openapi: '3.0.0',
             info: {
                 description: 'API for pet store management',
@@ -44,7 +44,7 @@ describe('ZemiOpenApiDocGenerator can...', () => {
                 name: 'petsById',
                 path: '/pets/{breed|string}/{id|number}',
                 [GET]: {
-                    description: "returns all pets",
+                    description: 'returns all pets',
                     tags: ['pets'],
                     responses: {
                         '200': {

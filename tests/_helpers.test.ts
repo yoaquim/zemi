@@ -1,4 +1,4 @@
-import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef, paramPathToOpenApiParamObj, paramPathToValidPath} from '../src/_helpers'
+import {buildRouteDefinitions, buildResponsesPerNamedRoute, buildRouteDef} from '../src/_helpers'
 import {ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute} from '../src/types/core.types'
 
 const {GET, POST} = ZemiMethod
@@ -183,54 +183,6 @@ describe('buildResponsesPerNamedRoute can...', () => {
                 "get": ['200', '404']
             },
         })
-    })
-})
-
-
-describe('paramPathToValidPath can...', () => {
-    test("convert a zemi path with params into a valid Express URL path with ':' prepended params", () => {
-        const url: string = '/pets/{breed|string}/{id|number}/details'
-        const result = paramPathToValidPath(url)
-        expect(result).toEqual('/pets/:breed/:id/details')
-    })
-
-    test("convert a zemi path with params into an OpenAPI path with '{}' encapsulated params", () => {
-        const url: string = '/pets/{breed|string}/{id|number}/details'
-        const result = paramPathToValidPath(url, true)
-        expect(result).toEqual('/pets/{breed}/{id}/details')
-    })
-
-    test("return a valid Express URL when no params present", () => {
-        const url: string = '/pets/dogs/breeds'
-        const result = paramPathToValidPath(url)
-        expect(result).toEqual('/pets/dogs/breeds')
-    })
-})
-
-describe('paramPathToOpenApiParamObj can...', () => {
-    test("convert a zemi path with params into an OpenAPI Params object", () => {
-        const url: string = '/pets/{breed|string}/{id|number}/details'
-        const result = paramPathToOpenApiParamObj(url)
-        expect(result).toEqual([
-            {
-                name: 'breed',
-                in: 'path',
-                required: true,
-                schema: {
-                    type: 'string',
-                    format: undefined,
-                }
-            },
-            {
-                name: 'id',
-                in: 'path',
-                required: true,
-                schema: {
-                    type: 'number',
-                    format: undefined,
-                }
-            }
-        ])
     })
 })
 
