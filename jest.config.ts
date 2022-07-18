@@ -24,7 +24,6 @@ export default {
   // The directory where Jest should store its cached dependency information
   // cacheDirectory: "/private/var/folders/r8/y01cvsgj669f1nkmvh29w8fr0000gn/T/jest_dx",
 
-
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   // collectCoverageFrom: undefined,
 
@@ -32,7 +31,6 @@ export default {
   // coveragePathIgnorePatterns: [
   //   "/node_modules/"
   // ],
-
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [

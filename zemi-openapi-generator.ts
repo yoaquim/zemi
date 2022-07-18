@@ -1,24 +1,22 @@
-import {OpenApiDoc} from './src/types/openapi.types'
-import ZemiOpenApiDocGenerator from './src/_openapi'
-import routes from './src/routes'
+import { OpenApiDoc } from "./src/types/openapi.types";
+import ZemiOpenApiDocGenerator from "./src/_openapi";
+import routes from "./src/routes";
 
 const doc: OpenApiDoc = {
-    openapi: '3.0.0',
-    info: {
-        description: 'API for pet store management',
-        version: '1.0',
-        title: 'Pet Store API',
-        contact: {
-            email: 'hello@petstore.com'
-        }
+  openapi: "3.0.0",
+  info: {
+    description: "API for pet store management",
+    version: "1.0",
+    title: "Pet Store API",
+    contact: {
+      email: "hello@petstore.com",
     },
-    tags: [
-        {name: 'pets', description: 'related to pets'},
-        {name: 'details', description: 'related to store details'}
-    ],
-    servers: [
-        {url: 'https://api.bestpetstore.com/v1'}
-    ]
-}
+  },
+  tags: [
+    { name: "pets", description: "related to pets" },
+    { name: "details", description: "related to store details" },
+  ],
+  servers: [{ url: "https://api.bestpetstore.com/v1" }],
+};
 
-ZemiOpenApiDocGenerator({doc, routes})
+ZemiOpenApiDocGenerator({ doc, routes });
