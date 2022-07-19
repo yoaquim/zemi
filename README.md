@@ -22,8 +22,8 @@ Features:
     3. [Leveraging All OpenApi Features](#leveraging-all-openapi-features)
     4. [Why is this better than directly defining an OpenApi JSON spec?](#why-is-this-better-than-directly-defining-an-openapi-json-spec)
 6. [Interfaces](#interfaces)
-7. [Limitations](#limitations)
-8. [Examples](#examples)
+7. [Examples](#examples)
+8. [Limitations](#limitations)
 
 ### Data-driven
 
@@ -508,6 +508,12 @@ Lets you provide a `path: string` value that specifies the location of where to 
 }
 ```
 
+## Examples
+
+Examples are available in the [examples]() dir:
+
+1. [`simple.ts`](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
+
 ## Limitations
 
 zemi is a recursive library: it uses recursion across a number of operations in order to facilitate a low footprint and straightforward, declarative definitions.
@@ -519,12 +525,6 @@ While recursive functions _can_ be optimized via [tail call optimization](https:
 Unfortunately — as of Node 8.x — TCO is [no](https://stackoverflow.com/questions/23260390/node-js-tail-call-optimization-possible-or-not) [longer](https://stackoverflow.com/questions/42788139/es6-tail-recursion-optimisation-stack-overflow/42788286#42788286) [supported](https://bugs.chromium.org/p/v8/issues/detail?id=4698).
 
 This means that, depending on what you're building and the size of your API, zemi might not be the right fit for you. zemi uses recursion when dealing with nested routes, so if your application has a very high number of nested-routes within nested-routes, chances are you might exceed the call stack.
-
-## Examples
-
-Examples are available in the [examples]() dir:
-
-1. [`simple.ts`](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
 
 [1]: https://github.com/yoaquim/zemi/blob/main/src/types/openapi.types.ts#L70
 
