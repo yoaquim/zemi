@@ -8,6 +8,36 @@ import { NamedRoute } from "./types/helpers.types";
 import { OpenApiParameterObject } from "./types/openapi.types";
 
 /**
+ * Builds a route-definition with the name and path specified.
+ * Will build an array of strings with the parameters specified in the path, and
+ * a reverse function -- which will substitute params in the path for values
+ * passed in via an object -- to the route-definition.
+ * @param path {string} - The path for this route-definition.
+ * @param name {string} - The name for this route-definition.
+ * @return {ZemiRouteDefinition} - A route-definition with the name, path, parameters in the path, and reverse function for said path.
+ * @type{(path: string, name:string)=> ZemiRouteDefinition}
+ */
+export function buildRouteDefinition(
+  path: string,
+  name: string
+): ZemiRouteDefinition {
+  const pathArray: Array<string> = path.split("/");
+  const parameters: Array<string> = pathArray
+    .filter((p) => p.includes(":"))
+    .map((p) => p.split(":")[1]);
+  const reverse = (paramValues: Record<string, string | number>): string => {
+    const pathParts = pathArray.map((p: string) => {
+      if (p.includes(":")) {
+        const key = p.split(":")[1];
+        return paramValues[key];
+      } else return p;
+    });
+    return pathParts.join("/");
+  };
+  return { name, path, parameters, reverse };
+}
+
+/**
  * Recursive. Builds a route-definition for each ZemiRoute in the array.
  * Converts zemi paths (path that has params with their types built in)
  * into valid Express paths. Used to add route-definitions to ZemiRequest
@@ -28,7 +58,7 @@ export function buildRouteDefinitions(
       const path: string = paramPathToValidExpressPath(dirtyPath);
 
       const mine: Record<string, ZemiRouteDefinition> = {
-        [name]: buildRouteDef(path, name),
+        [name]: buildRouteDefinition(path, name),
       };
       if (r.routes) {
         const toReturn: Record<string, ZemiRouteDefinition> = Object.assign(
@@ -153,31 +183,4 @@ export function paramPathToOpenApiParamObject(
       required: true,
     };
   });
-}
-
-/**
- * Builds a route-definition with the name and path specified.
- * Will build an array of strings with the parameters specified in the path, and
- * a reverse function -- which will substitute params in the path for values
- * passed in via an object -- to the route-definition.
- * @param path {string} - The path for this route-definition.
- * @param name {string} - The name for this route-definition.
- * @return {ZemiRouteDefinition} - A route-definition with the name, path, parameters in the path, and reverse function for said path.
- * @type{(path: string, name:string)=> ZemiRouteDefinition}
- */
-export function buildRouteDef(path: string, name: string): ZemiRouteDefinition {
-  const pathArray: Array<string> = path.split("/");
-  const parameters: Array<string> = pathArray
-    .filter((p) => p.includes(":"))
-    .map((p) => p.split(":")[1]);
-  const reverse = (paramValues: Record<string, string | number>): string => {
-    const pathParts = pathArray.map((p: string) => {
-      if (p.includes(":")) {
-        const key = p.split(":")[1];
-        return paramValues[key];
-      } else return p;
-    });
-    return pathParts.join("/");
-  };
-  return { name, path, parameters, reverse };
 }

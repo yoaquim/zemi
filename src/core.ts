@@ -10,7 +10,7 @@ import {
 import {
   buildRouteDefinitions,
   buildResponsesPerNamedRoute,
-  buildRouteDef,
+  buildRouteDefinition,
   paramPathToValidExpressPath,
 } from "./helpers";
 
@@ -42,14 +42,20 @@ export default function Zemi(
 
     route.middleware &&
       route.middleware.forEach((middleware: RequestHandler) =>
-        router.use(middleware)
+        router.use(
+          (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
+            middleware(request, response, next)
+        )
       );
 
     const methods = Object.values(ZemiMethod);
     methods.forEach((method: string) => {
       const handlerDefinition: ZemiHandlerDefinition = route[method];
       if (handlerDefinition && handlerDefinition.handler) {
-        const routeDef: ZemiRouteDefinition = buildRouteDef(path, route.name);
+        const routeDef: ZemiRouteDefinition = buildRouteDefinition(
+          path,
+          route.name
+        );
         router[method](
           path,
           (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>

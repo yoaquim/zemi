@@ -1,7 +1,7 @@
 import {
   buildRouteDefinitions,
   buildResponsesPerNamedRoute,
-  buildRouteDef,
+  buildRouteDefinition,
   paramPathToOpenApiParamObject,
   paramPathToValidExpressPath,
   paramPathToOpenApiPath,
@@ -204,7 +204,7 @@ describe("buildRouteDef can...", () => {
   test("return a valid ZemiRouteDef object", () => {
     const p = "/pets/:animal/available/:id";
     const n = "availablePetsByAnimalAndId";
-    const { path, name, parameters, reverse } = buildRouteDef(p, n);
+    const { path, name, parameters, reverse } = buildRouteDefinition(p, n);
     expect(path).toEqual(p);
     expect(name).toEqual(n);
     expect(parameters).toEqual(["animal", "id"]);
