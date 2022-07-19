@@ -13,7 +13,7 @@ import { OpenApiParameterObject } from "./types/openapi.types";
  * into valid Express paths. Used to add route-definitions to ZemiRequest
  * object.
  * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
- * @param [prefix] {NamedRoute} - Optional. The prefix to use for this route, if nested, so that its parent's path is added to its path.
+ * @param [prefix] {NamedRoute} - The prefix to use for this route, if nested, so that its parent's path is added to its path.
  * @returns {Record<string, ZemiRouteDefinition>} - An object where each key is a route name and the value is that routes' route-definition.
  * @type{(routes: Array<ZemiRoute>, prefix?: NamedRoute)=> Record<string, ZemiRouteDefinition>}
  */
@@ -50,7 +50,7 @@ export function buildRouteDefinitions(
  * HTTP methods to array of response codes for those same methods. Used to add
  * allowedResponseCodes to ZemiRequest object.
  * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
- * @param [prefix] {NamedRoute} - Optional. The prefix to use for this route, if nested, so that its parent's path is added to its path.
+ * @param [prefix] {NamedRoute} - The prefix to use for this route, if nested, so that its parent's path is added to its path.
  * @returns {Record<string, Record<string, Array<string>>>} - An object where each key is a route name and the value is an object whose keys map to an array of allowed response codes, as strings.
  * @type{(routes: Array<ZemiRoute>, prefix?: NamedRoute)=> Record<string, Record<string, Array<string>>>}
  */

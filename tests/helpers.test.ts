@@ -5,7 +5,7 @@ import {
   paramPathToOpenApiParamObject,
   paramPathToValidExpressPath,
   paramPathToOpenApiPath,
-} from "../src/_helpers";
+} from "../src/helpers";
 import {
   ZemiMethod,
   ZemiRequest,

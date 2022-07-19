@@ -1,4 +1,4 @@
-import ZemiOpenApiDocGenerator, { asyncWriteFile } from "../src/_openapi";
+import ZemiOpenApiDocGenerator, { asyncWriteFile } from "../src/openapi";
 import {
   ZemiRequest,
   ZemiResponse,

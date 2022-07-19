@@ -12,16 +12,16 @@ import {
   buildResponsesPerNamedRoute,
   buildRouteDef,
   paramPathToValidExpressPath,
-} from "./_helpers";
+} from "./helpers";
 
 /**
  * Recursive. Takes the ZemiRoutes passed in and returns an Express router
  * (either created or specified as the second argument) with each ZemiRoute as
  * an express route under it.
  * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
- * @param [router] {Router} - Optional. An Express router to be used for adding ZemiRoutes; router is auto-created if not passed in.
+ * @param [router] {Router} - An Express router to be used for adding ZemiRoutes; router is auto-created if not passed in.
  * @returns {Router} - A router with all ZemiRoutes built into it.
- * @type{(routes: Array<ZemiRoute>, router?: Router)=> Router}
+ * @type{(routes: Array<ZemiRoute>, router: Router)=> Router}
  */
 export default function Zemi(
   routes: Array<ZemiRoute>,

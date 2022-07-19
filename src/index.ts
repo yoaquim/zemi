@@ -1,5 +1,5 @@
 import express from "express";
-import zemi from "./_core";
+import zemi from "./core";
 import routes from "./routes";
 
 const app = express();

@@ -6,7 +6,7 @@ import {
   ZemiRequest,
   ZemiResponse,
 } from "../src/types/core.types";
-import zemi from "../src/_core";
+import zemi from "../src/core";
 
 const { GET, POST } = ZemiMethod;
 

@@ -16,7 +16,7 @@ import {
 import {
   paramPathToOpenApiParamObject,
   paramPathToOpenApiPath,
-} from "./_helpers";
+} from "./helpers";
 
 /**
  * Generates OpenApi Operation Objects from ZemiRoutes, path-parameters, and
@@ -28,7 +28,7 @@ import {
  * @param pathParams {Array<OpenApiParameterObject>} - An array of OpenApi Operation objects for a path (for all methods for said path), specified in the ZemiRoute.
  * @param definitionParams {Array<OpenApiParameterObject>} - An array of OpenApi Operation objects for a method, specified in the ZemiRoute.
  * @return {Array<OpenApiOperationObject>} - An array of OpenApi Operation objects generated from the methods of the specified ZemiRoute, the {pathParams} argument, and {definitionParams} argument.
- * @type{(  routes: Array<ZemiRoute>, parentPath?: string)=> Array<OpenApiOperationObject>}
+ * @type{(  routes: Array<ZemiRoute>, parentPath: string)=> Array<OpenApiOperationObject>}
  */
 function buildMethodDocs(
   route: ZemiRoute,
@@ -73,9 +73,9 @@ function buildMethodDocs(
  * Used to automatically generate each ZemiRoute's path spec for final OpenApi
  * doc.
  * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
- * @param [parentPath] {string} - Optional. The parent's path to use for this route, if nested, so that it is added to this path.
+ * @param [parentPath] {string} - The parent's path to use for this route, if nested, so that it is added to this path.
  * @return {Array<OpenApiPathItemObject>} - An array of OpenApi PathItemObject generated from specified ZemiRoutes.
- * @type{(  routes: Array<ZemiRoute>, parentPath?: string)=> Array<OpenApiPathItemObject>}
+ * @type{(  routes: Array<ZemiRoute>, parentPath: string)=> Array<OpenApiPathItemObject>}
  */
 function buildPathDocs(
   routes: Array<ZemiRoute>,
@@ -145,9 +145,9 @@ export async function asyncWriteFile(
  * Note that this is **not** an OpenApi validator.
  * @param doc {OpenApiDoc} - An OpenApi spec as an {OpenApiDoc} to be used when generating the OpenApi JSON.
  * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
- * @param [options] {ZemiOpenApiDocGenerationOptions} - Optional. Options to use when generating the OpenApi doc.
+ * @param [options] {ZemiOpenApiDocGenerationOptions} - Options to use when generating the OpenApi doc.
  * @return {OpenApiDoc} - The OpenApi JSON generated from the passed in OpenApi doc and ZemiRoutes.
- * @type{(doc: OpenApiDoc, routes:Array<ZemiRoute>, options?: ZemiOpenApiDocGenerationOptions)=> Promise<OpenApiDoc>}
+ * @type{(doc: OpenApiDoc, routes:Array<ZemiRoute>, options: ZemiOpenApiDocGenerationOptions)=> Promise<OpenApiDoc>}
  */
 export default async function ZemiOpenApiDocGenerator({
   doc,

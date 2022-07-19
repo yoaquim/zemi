@@ -1,5 +1,5 @@
 import { OpenApiDoc } from "./src/types/openapi.types";
-import ZemiOpenApiDocGenerator from "./src/_openapi";
+import ZemiOpenApiDocGenerator from "./src/openapi";
 import routes from "./src/routes";
 
 const doc: OpenApiDoc = {
