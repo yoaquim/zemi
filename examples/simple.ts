@@ -5,7 +5,7 @@ import zemi, {
   ZemiResponse,
   ZemiRoute,
   ZemiRouteDefinition,
-} from "../src";
+} from "zemi";
 
 const { GET } = ZemiMethod;
 

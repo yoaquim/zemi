@@ -9,13 +9,13 @@ type ZemiMethodIndexableHandlerDefinition = {
   [method in ZemiMethod]?: ZemiHandlerDefinition;
 };
 
-type ZemiRouteOptions = OpenApiPathItemDefinitionObject & {
+interface ZemiRouteOptions extends OpenApiPathItemDefinitionObject {
   name: string;
   path: string;
   middleware?: Array<RequestHandler>;
   routes?: Array<ZemiRoute>;
   parameters?: Array<OpenApiParameterObject>;
-};
+}
 
 export enum ZemiMethod {
   GET = "get",
@@ -46,9 +46,9 @@ export type ZemiRequestHandler = (
   routeDef: ZemiRouteDefinition
 ) => void;
 
-export type ZemiHandlerDefinition = {
+export interface ZemiHandlerDefinition extends OpenApiOperationObject {
   handler: ZemiRequestHandler;
-} & OpenApiOperationObject;
+}
 
 export type ZemiRoute = ZemiMethodIndexableHandlerDefinition & ZemiRouteOptions;
 

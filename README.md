@@ -1,14 +1,26 @@
 # zemi
 
-zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/).
+zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
 Features:
-
 - optional, [out-of-the-box support](#openapi) for [OpenAPI](https://www.openapis.org/)
 - [reverse-routing](#reverse-routing)
-- supports `GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`
+- supports `GET`, `POST`, `PUT`, `DELETE`, and `OPTIONS` HTTP methods
 - [path-parameter inheritance](#parameter-inheritance) (aka `mergeParams:true`)
 - route-level [middleware support](#middleware)
+
+# Table of Contents
+1. [Data-driven](#data-driven)
+2. [Reverse-routing](#reverse-routing)
+3. [Middleware](#middleware)
+4. [Parameter Inheritance](#parameter-inheritance)
+5. [OpenApi](#openapi)
+   1. [Defining Route Parameters](#defining-route-parameters)
+   2. [Generating an OpenApi JSON spec](#generating-an-openapi-json-spec)
+   3. [Leveraging All OpenApi Features](#leveraging-all-openapi-features)
+   4. [Why is this better than directly defining an OpenApi JSON spec?](#why-is-this-better-than-directly-defining-an-openapi-json-spec)
+6. [Interfaces](#interfaces)
+7. [Limitations](#limitations)
 
 ### Data-driven
 
@@ -24,6 +36,7 @@ const petsHandler = (request: ZemiRequest, response: ZemiResponse) => {
 Then the following code:
 
 ```ts
+import express from "express";
 import zemi, { ZemiRoute, ZemiMethod } from "zemi";
 
 const { GET } = ZemiMethod
@@ -74,14 +87,14 @@ Generates an API like:
 
 ### Reverse-routing
 
-zemi builds route-definitions for all routes and adds them to the ZemiRequest passed to the handler function.
+zemi builds route-definitions for all routes and adds them to the `ZemiRequest` passed to the handler function.
 
-All route-definitions are named (index-accessible) and follow the same naming convention: `[ancestor route names]-[parent route name]-[route name]`, e.g. `pets-dogsBreeds-dogsByBreedById`.
+All route-definitions are named (index-accessible) and follow the same naming convention: `[ancestor route names]-[parent route name]-[route name]`, e.g. `basePath-greatGrandparent-grandparent-parent-myRoute`, `pets-dogsBreeds-dogsByBreedById`.
 
 Each route-definition contains the name, path, and path-parameters (if present) of the route.
-It also contains a reverse function, which when invoked with an object mapping path-parameters to values, will return the interpolated path.
+It also contains a reverse function which — when invoked with an object mapping path-parameters to values — will return the interpolated path with values.
 
-E.g.:
+E.g. the handler:
 
 ```ts
 import { ZemiRequest, ZemiResponse, ZemiRouteDefinition } from "zemi";
@@ -93,7 +106,7 @@ const petsHandler = (request: ZemiRequest, response: ZemiResponse) => {
 };
 ```
 
-This handler returns:
+Returns:
 
 ```json
   {
@@ -211,7 +224,82 @@ You can forgo it entirely, use every supported feature, or just the bare-minimum
 
 It comes with a OpenApi spec generator — `ZemiOpenApiSpecGenerator` — which will create and save an `openapi.json` specification of your API.
 
-### Example
+### Defining Route Parameters
+
+You can pass a `parameters` array to each `ZemiMethod` definition, where each parameter is a [`OpenApiParameterObject`](https://github.com/yoaquim/zemi/blob/main/src/types/openapi.types.ts#L70):
+
+Each `OpenApiParameterObject` requires the following properties:
+
+```
+{
+  name: string
+  in: "query"|"header"|"path"|"cookie"
+  required: boolean
+  schema: {
+    type: string
+  }
+}
+```
+
+So a route with a `GET` that has the following `parameters` array:
+
+```ts
+const routes: Array<ZemiRoute> = [
+  {
+    name: "pets",
+    path: "/pets",
+    [GET]: { handler: petsHandler },
+    routes: [
+      {
+        name: "dogBreeds",
+        path: "/dogs/:breed",
+        [GET]: { handler: dogBreedHandler },
+        parameters: [
+          {
+            name: 'breed',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            }
+          }
+        ],
+      },
+    ]
+  }
+];
+```
+
+will correctly have the `breed` parameter detailed in the OpenApi spec.
+
+Alternatively, and at the expense of full features, you can specify a shorthand for `path` parameters without specifying the `parameters` array:
+
+```ts
+const routes: Array<ZemiRoute> = [
+  {
+    name: "pets",
+    path: "/pets",
+    [GET]: { handler: petsHandler },
+    routes: [
+      {
+        name: "dogBreeds",
+        path: "/dogs/{breed|string}",
+        [GET]: { handler: dogBreedHandler },
+      }
+    ]
+  }
+];
+```
+
+This notation — where each parameter is captured between curly braces (`{}`) — has the name and schema type of the parameter, delimited by a pipe (`|`).
+
+This will:
+
+- still generate a valid Express path (where path parameters are prefixed with `:`) for actual routes
+- generate a valid OpenApi path for that route
+- extract the name (anything _before_ `|`) and the schema type (anything _after_ `|`) for use in the OpenApi parameter definition
+
+### Generating an OpenApi JSON spec
 
 Assume you have ZemiRoutes defined at `src/routes/index.ts`.
 
@@ -238,6 +326,7 @@ ZemiOpenApiDocGenerator({ doc, routes });
 // const options = { path: '/path/to/save/openapijson/to' }
 // ZemiOpenApiDocGenerator({ doc, routes, options});
 ```
+
 That's the minimum config you need to generate an OpenApi spec.
 
 You can then use [`ts-node`](https://www.npmjs.com/package/ts-node) to run it:
@@ -248,4 +337,58 @@ npx ts-node zemi-openapi-spec-gen.ts
 
 This will generate an `openapi.json` at that same dir level.
 
-Note that you can pass an optional `options` object specifying the `path` you want to save it spec to.
+Note that you can pass an optional `options` object specifying the `path` you want to save the spec to.
+
+### Leveraging All OpenApi Features
+
+zemi breaks down OpenApi into two parts:
+
+1. The general doc passed into the `ZemiOpenApiDocGenerator`
+
+
+2. Documentation generated from `ZemiRoutes`
+
+The [general doc](https://github.com/yoaquim/zemi/blob/main/src/types/openapi.types.ts#L216) can be used to specify every valid object and definition supported by OpenApi, _except_ paths.
+
+Paths are specified via `ZemiRoutes` (although some general doc specifications might impact them): each _route_ supports properties specified in [OpenApiPathItemDefinitionObject](https://github.com/yoaquim/zemi/blob/main/src/types/openapi.types.ts#L156) , and each _method_ supports properties defined in [OpenApiOperationObject](https://github.com/yoaquim/zemi/blob/main/src/types/openapi.types.ts#L141).
+
+Combining both of these approaches, you can build a complete OpenApi spec.
+
+### Why is this better than directly defining an OpenApi JSON spec?
+
+1. It's code: types, auto-completion, and all the benefits you get with code on a modern IDE.
+
+
+2. Self documentation: as you're writing your API, you document it, which makes it easier to keep the spec up-to-date.
+
+
+3. Path generation: path and method definitions are, at the least, partly generated; more so if you want a straightforward, simple spec.
+
+## Interfaces
+
+### ZemiMethod
+
+### ZemiHandlerDefinition
+
+### ZemiRequestHandler
+
+### ZemiRequest
+
+### ZemiResponse
+
+### ZemiRouteDefinition
+
+### ZemiRoute
+
+## Limitations
+
+zemi is a recursive library: it uses recursion across a number of operations in order to facilitate a low footprint and straightforward, declarative definitions.
+
+Recursive operations can break the call-stack by going over its limit, generating `Maximum call stack size exceeded` errors. This means that the recursive function was called too many times, and exceeded the limit placed on it by Node.
+
+While recursive functions _can_ be optimized via [tail call optimization](https://stackoverflow.com/questions/310974/what-is-tail-call-optimization) (TCO), that feature _has_ to be present in the environment being run for optimization to work.
+
+Unfortunately — as of Node 8.x — TCO is [no](https://stackoverflow.com/questions/23260390/node-js-tail-call-optimization-possible-or-not) [longer](https://stackoverflow.com/questions/42788139/es6-tail-recursion-optimisation-stack-overflow/42788286#42788286) [supported](https://bugs.chromium.org/p/v8/issues/detail?id=4698).
+
+This means that, depending on what you're building and the size of your API, zemi might not be the right fit for you. zemi uses recursion when dealing with nested routes, so if your API has a very high number of nested-routes within nested-routes, chances are you might exceed the call stack.
+
