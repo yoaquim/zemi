@@ -203,11 +203,11 @@ The `newDogsByBreedByIdDetailsSection` route (path: `/pets/dogs/:breed/:id/detai
 
 ## OpenApi
 
-zemi supports OpenAPI out-of-the-box, but it's completely optional.
+zemi supports OpenAPI out-of-the-box — but it's completely optional.
 
 It has extensive [Typescript support for OpenApi](https://github.com/yoaquim/zemi/blob/main/src/types/openapi.types.ts).
 
-You can forgo it entirely, use every OpenApi supported feature, or use the bare-minimum as needed.
+You can forgo it entirely, use every supported feature, or just the bare-minimum as needed.
 
 It comes with a OpenApi spec generator — `ZemiOpenApiSpecGenerator` — which will create and save an `openapi.json` specification of your API.
 
