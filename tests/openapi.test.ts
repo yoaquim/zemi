@@ -1,4 +1,4 @@
-import ZemiOpenApiDocGenerator, { asyncWriteFile } from "../src/openapi";
+import ZemiOpenApiSpecGenerator, { asyncWriteFile } from "../src/openapi";
 import {
   ZemiRequest,
   ZemiResponse,
@@ -23,7 +23,7 @@ jest.mock("fs", () => {
 });
 //============================================
 
-describe("ZemiOpenApiDocGenerator can...", () => {
+describe("ZemiOpenApiSpecGenerator can...", () => {
   const { GET } = ZemiMethod;
 
   const doc: OpenApiDoc = {
@@ -86,7 +86,7 @@ describe("ZemiOpenApiDocGenerator can...", () => {
 
   test("generate an OpenApi spec", async () => {
     console.log = jest.fn();
-    const result = await ZemiOpenApiDocGenerator({ doc, routes });
+    const result = await ZemiOpenApiSpecGenerator({ doc, routes });
     expect(result).toEqual({
       openapi: "3.0.0",
       info: {
@@ -179,7 +179,7 @@ describe("ZemiOpenApiDocGenerator can...", () => {
   });
 
   test("write to a specified path", async () => {
-    await ZemiOpenApiDocGenerator({
+    await ZemiOpenApiSpecGenerator({
       doc,
       routes,
       options: { path: "/TEST/PATH" },

@@ -149,7 +149,7 @@ export async function asyncWriteFile(
  * @return {OpenApiDoc} - The OpenApi JSON generated from the passed in OpenApi doc and ZemiRoutes.
  * @type{(doc: OpenApiDoc, routes:Array<ZemiRoute>, options: ZemiOpenApiDocGenerationOptions)=> Promise<OpenApiDoc>}
  */
-export default async function ZemiOpenApiDocGenerator({
+export default async function ZemiOpenApiSpecGenerator({
   doc,
   routes,
   options,
