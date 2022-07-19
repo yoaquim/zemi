@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
 
 const { GET } = ZemiMethod;
@@ -20,6 +20,17 @@ const routes: Array<ZemiRoute> = [
     name: "pets",
     path: "/pets",
     [GET]: { handler: petsHandler },
+    middleware: [
+      function (
+        request: ZemiRequest,
+        response: ZemiResponse,
+        next: NextFunction
+      ) {
+        const { routeDefinitions } = request;
+        console.log(JSON.stringify(routeDefinitions));
+        next();
+      },
+    ],
     routes: [
       {
         name: "dogs",

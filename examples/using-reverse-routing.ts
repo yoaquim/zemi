@@ -15,6 +15,12 @@ const catsHandler = function (request: ZemiRequest, response: ZemiResponse) {
   response.status(200).json({ cats: ["persian", "bengal", "abyssinian"] });
 };
 
+const tigersHandler = function (request: ZemiRequest, response: ZemiResponse) {
+  // Tigers are just cats, so redirect to /cats
+  const { path } = request.routeDefinitions["cats"];
+  response.redirect(path);
+};
+
 const routes: Array<ZemiRoute> = [
   {
     name: "pets",
@@ -30,6 +36,11 @@ const routes: Array<ZemiRoute> = [
         name: "cats",
         path: "/cats",
         [GET]: { handler: catsHandler },
+      },
+      {
+        name: "tigers",
+        path: "/tigers",
+        [GET]: { handler: tigersHandler },
       },
     ],
   },

@@ -11,8 +11,18 @@ const dogsHandler = function (request: ZemiRequest, response: ZemiResponse) {
   response.status(200).json({ dogs: ["corgi", "labrador", "poodle"] });
 };
 
-const catsHandler = function (request: ZemiRequest, response: ZemiResponse) {
-  response.status(200).json({ cats: ["persian", "bengal", "abyssinian"] });
+const dogsBreedByIdHandler = function (
+  request: ZemiRequest,
+  response: ZemiResponse
+) {
+  const dogs = {
+    corgi: ["Ash", "Brock", "Misty"],
+    labrador: ['"Fred","Barney","Wilma"'],
+    poodle: ["Shaggy", "Scoob"],
+  };
+  const { breed, id } = request.params;
+  const result = dogs[breed] && dogs[breed][id];
+  response.status(200).json({ result });
 };
 
 const routes: Array<ZemiRoute> = [
@@ -25,11 +35,19 @@ const routes: Array<ZemiRoute> = [
         name: "dogs",
         path: "/dogs",
         [GET]: { handler: dogsHandler },
-      },
-      {
-        name: "cats",
-        path: "/cats",
-        [GET]: { handler: catsHandler },
+        routes: [
+          {
+            name: "dogsByBreeds",
+            path: "/dogs/{breed|string}",
+            routes: [
+              {
+                name: "dogsByBreedById",
+                path: "/{id|number}",
+                [GET]: { handler: dogsBreedByIdHandler },
+              },
+            ],
+          },
+        ],
       },
     ],
   },

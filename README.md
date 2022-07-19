@@ -471,7 +471,7 @@ Also provides a `reverse` function that, when invoked with an object that has pa
 Overrides [`OpenApiPathItemDefinitionObject`][2]'s `parameters` property, so that it only accepts an array of [`OpenApiParameterObject`][1] and not [`OpenApiReferenceObject`][6].
 This inheritance exists to support OpenApi spec generation, but most of the functional aspects are provided by the native properties of this object.
 
-Must be provided a `name: string`, `path: string`, and [`ZemiMethod`](#zemimethod):[`ZemiHandlerDefinition`](#zemihandlerdefinition).
+It must be provided a `name: string` and `path: string`; a [`ZemiMethod`](#zemimethod):[`ZemiHandlerDefinition`](#zemihandlerdefinition) needs to be provided if that path should have functionality, but doesn't need to be if the path is just present as a path-prefix for nested routes.
 
 ```
 {
@@ -512,7 +512,23 @@ Lets you provide a `path: string` value that specifies the location of where to 
 
 Examples are available in the [examples]() dir:
 
-1. [`simple.ts`](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
+1. [Simple](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
+
+
+2. [With Middleware](https://github.com/yoaquim/zemi/blob/main/examples/with-middleware.ts)
+
+
+3. [Using Reverse Routing](https://github.com/yoaquim/zemi/blob/main/examples/using-reverse-routing.ts)
+
+
+4. [With Param Inheritance from Parent Routes](https://github.com/yoaquim/zemi/blob/main/examples/nested-route-param-inheritance.ts)
+ 
+
+5. [Using `{paramName|paramType}`-style Parameters in Path](https://github.com/yoaquim/zemi/blob/main/examples/using-openapi-embedded-param-paths.ts)
+ 
+
+6. [Using More OpenApi features](https://github.com/yoaquim/zemi/blob/main/examples/leveraging-open-api.ts)
+
 
 ## Limitations
 
