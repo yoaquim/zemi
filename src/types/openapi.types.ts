@@ -3,12 +3,12 @@ export type OpenApiCallbackObject = Record<string, OpenApiPathItemObject>;
 export type OpenApiSecurityRequirementObject = Record<string, Array<string>>;
 export type OpenApiParameterObjectIn = "query" | "header" | "path" | "cookie";
 
-interface OpenApiDiscriminatorObject {
+export interface OpenApiDiscriminatorObject {
   propertyName: string;
   mapping?: Record<string, string>;
 }
 
-interface OpenApiXmlObject {
+export interface OpenApiXmlObject {
   name?: string;
   nameSpace?: string;
   prefix?: string;
@@ -43,14 +43,7 @@ export interface OpenApiSchemaObject {
   deprecated?: boolean | false;
 }
 
-export interface OpenApiHeaderObject {
-  type: string;
-  description?: string;
-  required?: boolean | false;
-  schema: OpenApiReferenceObject | OpenApiSchemaObject;
-}
-
-interface OpenApiEncodingObject {
+export interface OpenApiEncodingObject {
   contentType?: string;
   headers?: Record<string, OpenApiReferenceObject | OpenApiHeaderObject>;
   style?: string;
