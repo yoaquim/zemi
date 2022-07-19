@@ -510,7 +510,7 @@ Lets you provide a `path: string` value that specifies the location of where to 
 
 ## Examples
 
-Examples are available in the [examples]() dir:
+Examples are available in the [examples](https://github.com/yoaquim/zemi/blob/main/examples) dir:
 
 1. [Simple](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
 
