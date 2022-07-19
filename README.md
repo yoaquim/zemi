@@ -3,6 +3,7 @@
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
 Features:
+
 - optional, [out-of-the-box support](#openapi) for [OpenAPI](https://www.openapis.org/)
 - [reverse-routing](#reverse-routing)
 - supports `GET`, `POST`, `PUT`, `DELETE`, and `OPTIONS` HTTP methods
@@ -10,15 +11,16 @@ Features:
 - route-level [middleware support](#middleware)
 
 # Table of Contents
+
 1. [Data-driven](#data-driven)
 2. [Reverse-routing](#reverse-routing)
 3. [Middleware](#middleware)
 4. [Parameter Inheritance](#parameter-inheritance)
 5. [OpenApi](#openapi)
-   1. [Defining Route Parameters](#defining-route-parameters)
-   2. [Generating an OpenApi JSON spec](#generating-an-openapi-json-spec)
-   3. [Leveraging All OpenApi Features](#leveraging-all-openapi-features)
-   4. [Why is this better than directly defining an OpenApi JSON spec?](#why-is-this-better-than-directly-defining-an-openapi-json-spec)
+    1. [Defining Route Parameters](#defining-route-parameters)
+    2. [Generating an OpenApi JSON spec](#generating-an-openapi-json-spec)
+    3. [Leveraging All OpenApi Features](#leveraging-all-openapi-features)
+    4. [Why is this better than directly defining an OpenApi JSON spec?](#why-is-this-better-than-directly-defining-an-openapi-json-spec)
 6. [Interfaces](#interfaces)
 7. [Limitations](#limitations)
 
@@ -366,19 +368,120 @@ Combining both of these approaches, you can build a complete OpenApi spec.
 
 ## Interfaces
 
-### ZemiMethod
+### `ZemiMethod`
 
-### ZemiHandlerDefinition
+*Enum*
 
-### ZemiRequestHandler
+The HTTP methods supported by `ZemiRoute`.
 
-### ZemiRequest
+| Member    | Value     |
+|-----------|-----------|
+| `GET`     | `get`     |
+| `POST`    | `post`    |
+| `PUT`     | `put`     |
+| `DELETE`  | `delete`  |
+| `OPTIONS` | `options` |
 
-### ZemiResponse
+### `ZemiHandlerDefinition`
 
-### ZemiRouteDefinition
+*extends `OpenApiOperationObject`*
 
-### ZemiRoute
+The object that mapes to a `ZemiMethod`; where the core of functionality resides.
+This object is a wrapper for `OpenApiOperationObject` (for OpenApi spec generation purposes), but adds
+the key function `handler: ZemiRequestHandler`, which is where the logic for the route's method lives.
+
+```
+{
+  handler: ZemiRequestHandler
+  
+  // inherited from OpenApiOperationObject
+  
+  tags?: Array<string>;
+  summary?: string;
+  description?: string;
+  externalDocs?: OpenApiExternalDocumentationObject;
+  operationId?: string;
+  parameters?: Array<OpenApiReferenceObject | OpenApiParameterObject>;
+  requestBody?: OpenApiReferenceObject | OpenApiRequestBodyObject;
+  responses?: Record<string, OpenApiResponseObject>;
+  callbacks?: Record<string, OpenApiReferenceObject | OpenApiCallbackObject>;
+  deprecated?: boolean | false;
+  security?: Array<OpenApiSecurityRequirementObject>;
+  servers?: Array<OpenApiServerObject>;
+}
+```
+
+### `ZemiRequestHandler`
+
+How to handle incoming requests for this route method; basically `express.RequestHandler`, but gets passed its own request and response versions, plus adds that routes `ZemiRouteDefinition` as an optional fourth-param.
+
+```ts
+(
+  request: ZemiRequest,
+  response: ZemiResponse,
+  next: express.NextFunction,
+  routeDef: ZemiRouteDefinition
+) => void
+```
+
+### `ZemiRequest`
+
+*extends `express.Request`*
+
+A wrapper for `express.Request`; adds `routeDefinitions` and `allowedResponseHttpCodes` to it.
+
+`allowedResponseHttpCodes` is generated from  `OpenApiOperationObject.responses`, if provided to the `ZemiRoute`.
+
+```ts
+{
+  routeDefinitions: Record<string, ZemiRouteDefinition>;
+  allowedResponseHttpCodes: Record<string, Record<string, Array<string>>>;
+
+  // all other members from express.Request
+}
+
+```
+
+### `ZemiResponse`
+
+*extends `express.Response`*
+
+Just a wrapper for future-proofing; same as `express.Response`.
+
+### `ZemiRouteDefinition`
+
+Route definition for a given `ZemiRoute`.
+Contains the name, path, and path-parameters (if present) of the route it's defining.
+Also provides a `reverse` function that, when invoked with an object that has parameter-values, will return the resolved path.
+
+```ts
+{
+  name: string;
+  path: string;
+  parameters: Array<string>;
+  reverse: (parameterValues: object) => string;
+}
+```
+
+### `ZemiRoute`
+
+*extends `OpenApiPathItemDefinitionObject`*
+
+Overrides `OpenApiPathItemDefinitionObject`'s `parameters` property, so that it only accepts an array of `OpenApiParameterObject` and not `OpenApiReferenceObject`.
+This inheritance exists to support OpenApi spec generation, but most of the functional aspects are provided by the native properties of this object.
+
+Must be provided a `name: string`, `path: string`, and `ZemiMethod: ZemiHandlerDefinition`.
+
+```
+{
+   [ZemiMethod]: ZemiHandlerDefinition;
+   name: string;
+   path: string;
+   middleware?: Array<RequestHandler>;
+   routes?: Array<ZemiRoute>;
+   parameters?: Array<OpenApiParameterObject>;
+}
+```
 
 ## Limitations
 
