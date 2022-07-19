@@ -1,7 +1,7 @@
 {
   "name": "zemi",
   "version": "1.0.0",
-  "description": "Zemi provides data-driven and reverse routing capabilities for Express. It also provides OpenAPI support, allowing you to specify and autogenerate an OpenAPI spec.",
+  "description": "Zemi is data-driven and reverse routing library for Express. It provides out-of-the-box OpenAPI support, allowing you to specify and autogenerate an OpenAPI spec.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
