@@ -52,6 +52,6 @@ export interface ZemiHandlerDefinition extends OpenApiOperationObject {
 
 export type ZemiRoute = ZemiMethodIndexableHandlerDefinition & ZemiRouteOptions;
 
-export interface ZemiOpenApiDocGenerationOptions {
+export interface ZemiOpenApiSpecGenerationOptions {
   path: string;
 }

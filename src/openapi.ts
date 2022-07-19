@@ -3,7 +3,7 @@ import { promises as fsPromises } from "fs";
 import {
   ZemiHandlerDefinition,
   ZemiMethod,
-  ZemiOpenApiDocGenerationOptions,
+  ZemiOpenApiSpecGenerationOptions,
   ZemiRoute,
 } from "./types/core.types";
 import {
@@ -145,9 +145,9 @@ export async function asyncWriteFile(
  * Note that this is **not** an OpenApi validator.
  * @param doc {OpenApiDoc} - An OpenApi spec as an {OpenApiDoc} to be used when generating the OpenApi JSON.
  * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
- * @param [options] {ZemiOpenApiDocGenerationOptions} - Options to use when generating the OpenApi doc.
+ * @param [options] {ZemiOpenApiSpecGenerationOptions} - Options to use when generating the OpenApi doc.
  * @return {OpenApiDoc} - The OpenApi JSON generated from the passed in OpenApi doc and ZemiRoutes.
- * @type{(doc: OpenApiDoc, routes:Array<ZemiRoute>, options: ZemiOpenApiDocGenerationOptions)=> Promise<OpenApiDoc>}
+ * @type{(doc: OpenApiDoc, routes:Array<ZemiRoute>, options: ZemiOpenApiSpecGenerationOptions)=> Promise<OpenApiDoc>}
  */
 export default async function ZemiOpenApiSpecGenerator({
   doc,
@@ -156,7 +156,7 @@ export default async function ZemiOpenApiSpecGenerator({
 }: {
   doc: OpenApiDoc;
   routes: Array<ZemiRoute>;
-  options?: ZemiOpenApiDocGenerationOptions;
+  options?: ZemiOpenApiSpecGenerationOptions;
 }): Promise<OpenApiDoc> {
   const whereToWrite =
     options && options.path

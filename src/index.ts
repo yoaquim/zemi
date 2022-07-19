@@ -5,7 +5,7 @@ export { default as ZemiOpenApiSpecGenerator } from "./openapi";
 
 export {
   ZemiMethod,
-  ZemiOpenApiDocGenerationOptions,
+  ZemiOpenApiSpecGenerationOptions,
   ZemiHandlerDefinition,
   ZemiRequest,
   ZemiRequestHandler,
