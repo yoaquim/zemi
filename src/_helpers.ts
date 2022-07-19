@@ -7,6 +7,16 @@ import {
 import { NamedRoute } from "./types/helpers.types";
 import { OpenApiParameterObject } from "./types/openapi.types";
 
+/**
+ * Recursive. Builds a route-definition for each ZemiRoute in the array.
+ * Converts zemi paths (path that has params with their types built in)
+ * into valid Express paths. Used to add route-definitions to ZemiRequest
+ * object.
+ * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
+ * @param [prefix] {NamedRoute} - Optional. The prefix to use for this route, if nested, so that its parent's path is added to its path.
+ * @returns {Record<string, ZemiRouteDefinition>} - An object where each key is a route name and the value is that routes' route-definition.
+ * @type{(routes: Array<ZemiRoute>, prefix?: NamedRoute)=> Record<string, ZemiRouteDefinition>}
+ */
 export function buildRouteDefinitions(
   routes: Array<ZemiRoute>,
   prefix?: NamedRoute
@@ -35,6 +45,15 @@ export function buildRouteDefinitions(
   return Object.assign({}, ...namedRoutes);
 }
 
+/**
+ * Recursive. Builds an object with route names as keys and values are objects mapping
+ * HTTP methods to array of response codes for those same methods. Used to add
+ * allowedResponseCodes to ZemiRequest object.
+ * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
+ * @param [prefix] {NamedRoute} - Optional. The prefix to use for this route, if nested, so that its parent's path is added to its path.
+ * @returns {Record<string, Record<string, Array<string>>>} - An object where each key is a route name and the value is an object whose keys map to an array of allowed response codes, as strings.
+ * @type{(routes: Array<ZemiRoute>, prefix?: NamedRoute)=> Record<string, Record<string, Array<string>>>}
+ */
 export function buildResponsesPerNamedRoute(
   routes: Array<ZemiRoute>,
   prefix?: string
@@ -66,6 +85,14 @@ export function buildResponsesPerNamedRoute(
   return Object.assign({}, ...namedRoutes);
 }
 
+/**
+ * Converts a zemi-style path -- where parameters are specified as
+ * `{param|type}` -- to a valid Express path (parameters are defined as
+ * `:param`). Used to generate paths for Express routes, from ZemiRoutes.
+ * @param path {string} - A path that has parameters specified as `{param|type}`.
+ * @return {string} - A valid Express path, that has parameters specified as `:param`.
+ * @type{(path: string)=> string}
+ */
 export function paramPathToValidExpressPath(path: string): string {
   const pathBits: Array<string> = path.split("/").map((p) => {
     if (p[0] === "{" && p[p.length - 1] === "}") {
@@ -78,6 +105,14 @@ export function paramPathToValidExpressPath(path: string): string {
   return pathBits.join("/");
 }
 
+/**
+ * Converts a zemi-style path -- where parameters are specified as
+ * `{param|type}` -- to a valid OpenApi path (parameters are defined as
+ * `{param}`). Used to generate paths for OpenApi spec, from ZemiRoutes.
+ * @param path {string} - A path that has parameters specified as `{param|type}`.
+ * @return {string} - A valid OpenApi path, that has parameters specified as `{param}`.
+ * @type{(path: string)=> string}
+ */
 export function paramPathToOpenApiPath(path: string): string {
   const pathBits: Array<string> = path.split("/").map((p) => {
     if (p[0] === "{" && p[p.length - 1] === "}") {
@@ -90,6 +125,14 @@ export function paramPathToOpenApiPath(path: string): string {
   return pathBits.join("/");
 }
 
+/**
+ * Converts a zemi-style path -- where parameters are specified as
+ * `{param|type}` -- to an OpenApi ParameterObject.
+ * Used when generating ParameterObjects, from ZemiRoutes, for OpenApi spec generation.
+ * @param path {string} - A path that has parameters specified as `{param|type}`.
+ * @return {Array<OpenApiParameterObject>} - An array of OpenApi ParameterObject.
+ * @type{(path: string)=> Array<OpenApiParameterObject>}
+ */
 export function paramPathToOpenApiParamObject(
   path: string
 ): Array<OpenApiParameterObject> {
@@ -112,6 +155,16 @@ export function paramPathToOpenApiParamObject(
   });
 }
 
+/**
+ * Builds a route-definition with the name and path specified.
+ * Will build an array of strings with the parameters specified in the path, and
+ * a reverse function -- which will substitute params in the path for values
+ * passed in via an object -- to the route-definition.
+ * @param path {string} - The path for this route-definition.
+ * @param name {string} - The name for this route-definition.
+ * @return {ZemiRouteDefinition} - A route-definition with the name, path, parameters in the path, and reverse function for said path.
+ * @type{(path: string, name:string)=> ZemiRouteDefinition}
+ */
 export function buildRouteDef(path: string, name: string): ZemiRouteDefinition {
   const pathArray: Array<string> = path.split("/");
   const parameters: Array<string> = pathArray
