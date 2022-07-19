@@ -387,7 +387,7 @@ The HTTP methods supported by [`ZemiRoute`](#zemiroute).
 
 *extends [`OpenApiOperationObject`][4]*
 
-The object that mapes to a [`ZemiMethod`](#zemimethod); where the core of functionality resides.
+The object that maps to a [`ZemiMethod`](#zemimethod); where the core of functionality resides.
 This object is a wrapper for [`OpenApiOperationObject`][4] (for OpenApi spec generation purposes), but adds
 the key function [`handler: ZemiRequestHandler`](#zemirequesthandler), which is where the logic for the route's method lives.
 
@@ -414,7 +414,7 @@ the key function [`handler: ZemiRequestHandler`](#zemirequesthandler), which is 
 
 ### `ZemiRequestHandler`
 
-How to handle incoming requests for this route method; basically `express.RequestHandler`, but gets passed its own request and response versions, plus adds that routes [`ZemiRouteDefinition`](#zemiroutedefinition) as an optional fourth-param.
+How to handle incoming requests for this route method; basically `express.RequestHandler`, but gets passed its own request and response versions, plus adds that routes [`ZemiRouteDefinition`](#zemiroutedefinition) as an optional fourth param.
 
 ```ts
 (
@@ -518,7 +518,7 @@ While recursive functions _can_ be optimized via [tail call optimization](https:
 
 Unfortunately — as of Node 8.x — TCO is [no](https://stackoverflow.com/questions/23260390/node-js-tail-call-optimization-possible-or-not) [longer](https://stackoverflow.com/questions/42788139/es6-tail-recursion-optimisation-stack-overflow/42788286#42788286) [supported](https://bugs.chromium.org/p/v8/issues/detail?id=4698).
 
-This means that, depending on what you're building and the size of your API, zemi might not be the right fit for you. zemi uses recursion when dealing with nested routes, so if your API has a very high number of nested-routes within nested-routes, chances are you might exceed the call stack.
+This means that, depending on what you're building and the size of your API, zemi might not be the right fit for you. zemi uses recursion when dealing with nested routes, so if your application has a very high number of nested-routes within nested-routes, chances are you might exceed the call stack.
 
 ## Examples
 
