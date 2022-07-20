@@ -1,8 +1,10 @@
 # zemi
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 ![build branch parameter](https://github.com/yoaquim/zemi/actions/workflows/tests.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/yoaquim/zemi/branch/main/graph/badge.svg)](https://codecov.io/gh/yoaquim/zemi)
+
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![NPM Version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
