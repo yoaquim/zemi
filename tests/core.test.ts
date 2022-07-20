@@ -418,6 +418,79 @@ describe("zemi core functionality can...", () => {
       },
     });
   });
+
+  test("correctly build paths for defined-routes when object being access by nested routes", async () => {
+    const petsHandler = function (
+      request: ZemiRequest,
+      response: ZemiResponse
+    ) {
+      const { routeDefinitions } = request;
+      response.status(200).json({ routeDefinitions });
+    };
+
+    const dogsHandler = function (
+      request: ZemiRequest,
+      response: ZemiResponse
+    ) {
+      response.status(200).json({ dogs: ["corgi", "labrador", "poodle"] });
+    };
+
+    const catsHandler = function (
+      request: ZemiRequest,
+      response: ZemiResponse
+    ) {
+      const routeDefs = request.routeDefinitions;
+      response.status(200).json({ routeDefs });
+    };
+
+    const tigersHandler = function (
+      request: ZemiRequest,
+      response: ZemiResponse
+    ) {
+      // Tigers are just cats, so redirect to /cats
+      const routeDefinitions = request.routeDefinitions;
+      response.json({ routeDefinitions });
+    };
+
+    const routes: Array<ZemiRoute> = [
+      {
+        name: "pets",
+        path: "/pets",
+        [GET]: { handler: petsHandler },
+        routes: [
+          {
+            name: "dogs",
+            path: "/dogs",
+            [GET]: { handler: dogsHandler },
+          },
+          {
+            name: "cats",
+            path: "/cats",
+            [GET]: { handler: catsHandler },
+          },
+          {
+            name: "tigers",
+            path: "/tigers",
+            [GET]: { handler: tigersHandler },
+          },
+        ],
+      },
+    ];
+
+    const response = await testGET("/pets/tigers", routes);
+    expect(response.body).toEqual({
+      routeDefinitions: {
+        pets: { name: "pets", path: "/pets", parameters: [] },
+        "pets-dogs": { name: "pets-dogs", path: "/pets/dogs", parameters: [] },
+        "pets-cats": { name: "pets-cats", path: "/pets/cats", parameters: [] },
+        "pets-tigers": {
+          name: "pets-tigers",
+          path: "/pets/tigers",
+          parameters: [],
+        },
+      },
+    });
+  });
 });
 
 describe("zemi middleware functionality can...", () => {

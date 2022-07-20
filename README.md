@@ -111,7 +111,7 @@ import { ZemiRequest, ZemiResponse, ZemiRouteDefinition } from "zemi";
 const petsHandler = (request: ZemiRequest, response: ZemiResponse) => {
   const routeDefinitions: Record<string, ZemiRouteDefinition> = request.routeDefinitions;
   const { path, name, parameters, reverse } = routeDefinitions["pets-dogBreeds-dogsByBreedById"];
-  response.status(200).json({ path, name, parameters, reverse: reverse({ breed: 'Corgi', id: '1' }) });
+  response.status(200).json({ path, name, parameters, reverse: reverse({ breed: 'Corgi', id: '99' }) });
 };
 ```
 
