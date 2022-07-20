@@ -17,7 +17,7 @@ const catsHandler = function (request: ZemiRequest, response: ZemiResponse) {
 
 const tigersHandler = function (request: ZemiRequest, response: ZemiResponse) {
   // Tigers are just cats, so redirect to /cats
-  const { path } = request.routeDefinitions["cats"];
+  const { path } = request.routeDefinitions["pets-cats"];
   response.redirect(path);
 };
 
