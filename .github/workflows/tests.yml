@@ -23,3 +23,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm test
+      - run: curl -Os https://uploader.codecov.io/latest/linux/codecov
+      - run: chmod +x codecov
+      - run: ./codecov
