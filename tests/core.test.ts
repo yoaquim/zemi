@@ -5,6 +5,7 @@ import {
   ZemiMethod,
   ZemiRequest,
   ZemiResponse,
+  ZemiRouteDefinition,
 } from "../src/types/core.types";
 import zemi from "../src/core";
 
@@ -490,6 +491,45 @@ describe("zemi core functionality can...", () => {
         },
       },
     });
+  });
+
+  test("correctly add the complete routeDefinition as the fourth argument in the ZemiRequestHandler fn", async () => {
+    const tigersHandler = (
+      request: ZemiRequest,
+      response: ZemiResponse,
+      _: NextFunction,
+      routeDefinition: ZemiRouteDefinition
+    ) => {
+      response.json({ routeDefinition });
+    };
+
+    const routes: Array<ZemiRoute> = [
+      {
+        name: "pets",
+        path: "/pets",
+        routes: [
+          {
+            name: "dogs",
+            path: "/dogs",
+          },
+          {
+            name: "cats",
+            path: "/cats",
+            routes: [
+              {
+                name: "tigers",
+                path: "/tigers",
+                [GET]: { handler: tigersHandler },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const response = await testGET("/pets/tigers", routes);
+    expect(response.body.routeDefinition.name).toEqual("pets-cats-tigers");
+    expect(response.body.routeDefinition.path).toEqual("/pets/cats/tigers");
   });
 });
 

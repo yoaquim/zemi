@@ -21,6 +21,7 @@ import {
  * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
  * @param [router] {Router} - An Express router to be used for adding ZemiRoutes; router is auto-created if not passed in.
  * @param [__routeDefinitions] {Record<string, ZemiRouteDefinition>} - The route definitions for this zemi function. Initialized if not passed-in.
+ * @param [__parentPath] {string} - Path of parent, use to identify current path definition.
  * @returns {Router} - A router with all ZemiRoutes built into it.
  * @type{(routes: Array<ZemiRoute>, router: Router)=> Router}
  */
@@ -30,7 +31,8 @@ export default function Zemi(
   __routeDefinitions: Record<
     string,
     ZemiRouteDefinition
-  > = buildRouteDefinitions(routes)
+  > = buildRouteDefinitions(routes),
+  __parentPath?: string
 ): Router {
   const allowedResponseHttpCodes = buildResponsesPerNamedRoute(routes);
   router.use(function (
@@ -45,6 +47,7 @@ export default function Zemi(
 
   routes.forEach((route: ZemiRoute) => {
     const path: string = paramPathToValidExpressPath(route.path);
+    const fullPath = __parentPath ? `${__parentPath}${path}` : path;
 
     route.middleware &&
       route.middleware.forEach((middleware: RequestHandler) =>
@@ -58,10 +61,14 @@ export default function Zemi(
     methods.forEach((method: string) => {
       const handlerDefinition: ZemiHandlerDefinition = route[method];
       if (handlerDefinition && handlerDefinition.handler) {
-        const routeDef: ZemiRouteDefinition = buildRouteDefinition(
-          path,
-          route.name
-        );
+        // const routeDef: ZemiRouteDefinition = buildRouteDefinition(
+        //   path,
+        //   route.name
+        // );
+        const routeDef: ZemiRouteDefinition = Object.keys(__routeDefinitions)
+          .map((rdk: string) => __routeDefinitions[rdk])
+          .filter((rd: ZemiRouteDefinition) => rd.path === fullPath)[0];
+
         router[method](
           path,
           (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
@@ -71,7 +78,10 @@ export default function Zemi(
     });
 
     route.routes &&
-      router.use(path, Zemi(route.routes, router, __routeDefinitions));
+      router.use(
+        path,
+        Zemi(route.routes, router, __routeDefinitions, fullPath)
+      );
   });
 
   return router;
