@@ -315,8 +315,7 @@ Assume you have [`ZemiRoute`](#zemiroute)s defined at `src/routes/index.ts`.
 Create a file at the root (project) level named `zemi-openapi-spec-gen.ts`:
 
 ```ts
-import { OpenApiDoc } from "zemi";
-import ZemiOpenApiSpecGenerator from "zemi";
+import { OpenApiDoc, ZemiOpenApiSpecGenerator} from "zemi";
 import routes from "./src/routes";
 
 const doc: OpenApiDoc = {
