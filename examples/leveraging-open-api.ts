@@ -1,5 +1,11 @@
-import express from "express";
-import zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
+import express, { NextFunction } from "express";
+import zemi, {
+  ZemiMethod,
+  ZemiRequest,
+  ZemiResponse,
+  ZemiRoute,
+  ZemiRouteDefinition,
+} from "zemi";
 
 const { GET } = ZemiMethod;
 
@@ -15,14 +21,18 @@ const dogsBreedByIdHandler = function (
   request: ZemiRequest,
   response: ZemiResponse
 ) {
-  const dogs = {
+  const dogs: Record<string, Array<string>> = {
     corgi: ["Ash", "Brock", "Misty"],
     labrador: ['"Fred","Barney","Wilma"'],
     poodle: ["Shaggy", "Scoob"],
   };
   const { breed, id } = request.params;
-  const result = dogs[breed] && dogs[breed][id];
-  response.status(200).json({ result });
+  const i: number = parseInt(id, 10);
+  const result = dogs[breed] && dogs[breed][i];
+
+  const allowedResponses = request.allowedResponseHttpCodes;
+
+  response.status(200).json({ result, allowedResponses });
 };
 
 const routes: Array<ZemiRoute> = [
@@ -76,15 +86,17 @@ const routes: Array<ZemiRoute> = [
                     schema: { type: "boolean" },
                   },
                 ],
-                responses: {
-                  "200": {
-                    description: "successful operation",
-                  },
-                  "404": {
-                    description: "dog not found",
+                [GET]: {
+                  handler: dogsBreedByIdHandler,
+                  responses: {
+                    "200": {
+                      description: "successful operation",
+                    },
+                    "404": {
+                      description: "dog not found",
+                    },
                   },
                 },
-                [GET]: { handler: dogsBreedByIdHandler },
               },
             ],
           },
