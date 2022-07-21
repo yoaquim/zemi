@@ -1,18 +1,15 @@
 # zemi
 
-[//]: # ([![codeclimate coverage]&#40;https://codeclimate.com/github/epoberezkin/ajv/badges/coverage.svg&#41;]&#40;https://codeclimate.com/github/yoaquim/zim/coverage&#41;)
+[![Github Build](https://github.com/yoaquim/zemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yoaquim/zemi/actions/workflows/ci.yml)
+[![Test Coverage](https://codeclimate.com/github/yoaquim/zemi/badges/coverage.svg)](https://codeclimate.com/github/yoaquim/zemi/coverage)
+[![Code Climate](https://codeclimate.com/github/yoaquim/zemi/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
+[![Snyk.io Vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
 
-[![github build](https://github.com/yoaquim/zemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yoaquim/zemi/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/yoaquim/zemi/branch/main/graph/badge.svg)](https://codecov.io/gh/yoaquim/zemi)
-[![vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
 [![npm version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
-
-[![license](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
 [![types](https://badgen.net/npm/types/zemi)](https://github.com/yoaquim/zemi/tree/main/src/types)
 [![dependencies](https://badgen.net/bundlephobia/dependency-count/zemi)](https://github.com/yoaquim/zemi/blob/main/package.json#L20-L23)
 [![install size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
-
-[![prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![license](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
 
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
