@@ -5,7 +5,7 @@
 [![Code Climate Maintainability](https://codeclimate.com/github/yoaquim/zemi/badges/gpa.svg)](https://codeclimate.com/github/yoaquim/zemi)
 [![Snyk.io Vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
 
-[![npm Version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
+[![npm Version](https://img.shields.io/npm/v/zemi?color=137dc2&logo=npm)](https://www.npmjs.com/package/zemi)
 [![Types](https://badgen.net/npm/types/zemi)](https://github.com/yoaquim/zemi/tree/main/src/types)
 [![Dependencies](https://badgen.net/bundlephobia/dependency-count/zemi)](https://github.com/yoaquim/zemi/blob/main/package.json#L20-L23)
 [![Install Size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
