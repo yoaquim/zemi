@@ -11,6 +11,8 @@
 [![Install Size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
 [![License](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
 
+<br>
+
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
 Features:
