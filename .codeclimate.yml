@@ -1,3 +1,7 @@
+version: "2"
 exclude_patterns:
-- "examples/*.ts"
-- "**/*.rb"
+- "examples"
+- "node_modules"
+- "dist"
+- "docs"
+- "coverage"

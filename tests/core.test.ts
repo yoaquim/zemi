@@ -219,37 +219,34 @@ describe("zemi core functionality can...", () => {
   test("create a POST route and a GET route that both work.", async () => {
     const routes: Array<ZemiRoute> = [
       {
-        name: "newPetById",
-        path: "/new-pet/:id",
+        name: "newItem",
+        path: "/new-item",
         [POST]: {
           handler: function (request: Request, response: Response) {
-            const { new_pet } = request.body;
-            const { id } = request.params;
-            response.status(200).json({ new_pet, id });
+            const { new_item } = request.body;
+            response.status(200).json({ new_item });
           },
         },
         [GET]: {
           handler: function (request: Request, response: Response) {
             const { id } = request.params;
-            response.status(200).json({ id, message: "add pets" });
+            response.status(200).json({ id, message: "items" });
           },
         },
       },
     ];
 
     const postResponse = await testPOST(
-      "/new-pet/99",
-      { new_pet: "rabbit" },
+      "/new-item",
+      { new_item: "sponge" },
       routes
     );
     expect(postResponse.status).toEqual(200);
-    expect(postResponse.body.new_pet).toEqual("rabbit");
-    expect(postResponse.body.id).toEqual("99");
+    expect(postResponse.body.new_item).toEqual("sponge");
 
-    const getResponse = await testGET("/new-pet/99", routes);
+    const getResponse = await testGET("/new-item", routes);
     expect(getResponse.status).toEqual(200);
-    expect(getResponse.body.message).toEqual("add pets");
-    expect(getResponse.body.id).toEqual("99");
+    expect(getResponse.body.message).toEqual("items");
   });
 
   test("build nested routes without having a handler at the current level", async () => {

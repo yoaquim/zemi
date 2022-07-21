@@ -106,11 +106,11 @@ describe("buildResponsesPerNamedRoute can...", () => {
   test("return an object with the name of the route as the key, and an object that has the responses per named methods", () => {
     const routes: Array<ZemiRoute> = [
       {
-        name: "pets",
-        path: "/pets",
+        name: "items",
+        path: "/items",
         [GET]: {
-          description: "returns all pets",
-          tags: ["pets"],
+          description: "returns all items",
+          tags: ["items"],
           responses: {
             "200": {
               description: "successful operation",
@@ -121,8 +121,8 @@ describe("buildResponsesPerNamedRoute can...", () => {
           },
         },
         [POST]: {
-          description: "creates a new pet",
-          tags: ["pets"],
+          description: "creates a new item",
+          tags: ["item"],
           responses: {
             "200": {
               description: "successful operation",
@@ -137,17 +137,17 @@ describe("buildResponsesPerNamedRoute can...", () => {
         },
         routes: [
           {
-            name: "dogsById",
-            path: "/dogs/:dogId",
+            name: "onSale",
+            path: "/onSale/:saleId",
             [GET]: {
-              description: "returns all dogs",
-              tags: ["pets", "dogs"],
+              description: "returns sale by id",
+              tags: ["item", "sales"],
               responses: {
                 "200": {
                   description: "successful operation",
                 },
                 "404": {
-                  description: "pet not found",
+                  description: "sale not found",
                 },
               },
               handler: function (request: ZemiRequest, response: ZemiResponse) {
@@ -158,17 +158,17 @@ describe("buildResponsesPerNamedRoute can...", () => {
         ],
       },
       {
-        name: "petsById",
-        path: "/pets/:id",
+        name: "itemsById",
+        path: "/items/:id",
         [GET]: {
-          description: "returns all pets",
+          description: "returns items by id",
           tags: ["pets"],
           responses: {
             "200": {
               description: "successful operation",
             },
             "404": {
-              description: "pet not found",
+              description: "item not found",
             },
           },
           handler: function (request: ZemiRequest, response: ZemiResponse) {
@@ -180,14 +180,14 @@ describe("buildResponsesPerNamedRoute can...", () => {
 
     const result = buildResponsesPerNamedRoute(routes);
     expect(result).toEqual({
-      pets: {
+      items: {
         get: ["200"],
         post: ["200", "404"],
       },
-      "pets-dogsById": {
+      "items-onSale": {
         get: ["200", "404"],
       },
-      petsById: {
+      itemsById: {
         get: ["200", "404"],
       },
     });

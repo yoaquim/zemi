@@ -40,6 +40,7 @@
     "start": "tsc && node .",
     "test": "jest",
     "prettify": "npx prettier --write .",
+    "codeclimate": "codeclimate analyze",
     "typedoc": "npx typedoc --entryPointStrategy expand ./src/ && open docs/index.html"
   },
   "author": "Yoaquim Cintrón",
