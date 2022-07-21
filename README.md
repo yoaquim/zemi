@@ -1,13 +1,14 @@
 # zemi
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-[![install size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
-
 ![build branch parameter](https://github.com/yoaquim/zemi/actions/workflows/tests.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/yoaquim/zemi/branch/main/graph/badge.svg)](https://codecov.io/gh/yoaquim/zemi)
 [![Known Vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
 [![NPM Version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
 
+[//]: # ([![code style: prettier]&#40;https://img.shields.io/badge/code_style-prettier-ff69b4.svg&#41;]&#40;https://github.com/prettier/prettier&#41;)
+![](https://badgen.net/npm/license/zemi)
+![](https://badgen.net/npm/types/zemi)
+![](https://badgen.net/bundlephobia/dependency-count/zemi)
+[![install size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
 
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
