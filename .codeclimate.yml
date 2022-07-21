@@ -5,3 +5,4 @@ exclude_patterns:
 - "dist"
 - "docs"
 - "coverage"
+

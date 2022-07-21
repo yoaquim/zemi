@@ -7,15 +7,13 @@ import {
 import { NamedRoute } from "./types/helpers.types";
 import { OpenApiParameterObject } from "./types/openapi.types";
 
-const wrappedInBrackets = (p: string): boolean =>
-  p[0] === "{" && p[p.length - 1] === "}";
+type ResponsesPerRoute = Record<string, Array<string>>;
+
+const wrappedInBrackets = (p: string): boolean => p[0] === "{" && p[p.length - 1] === "}";
 
 const getParamKey = (p: string): string => p.split("{")[1].split("|")[0];
 
-const wrapParameterByFramework = (
-  p: string,
-  framework: "express" | "openapi"
-): string => {
+const wrapParameterByFramework = (p: string, framework: "express" | "openapi"): string => {
   if (wrappedInBrackets(p)) {
     if (framework === "express") return `:${getParamKey(p)}`;
     else if (framework === "openapi") return `{${getParamKey(p)}}`;
@@ -24,9 +22,7 @@ const wrapParameterByFramework = (
   }
 };
 
-const buildResponsesPerMethod = (
-  route: ZemiRoute
-): Array<Record<string, Array<string>>> => {
+const buildResponsesPerMethod = (route: ZemiRoute): Array<Record<string, Array<string>>> => {
   const methods = Object.values(ZemiMethod);
   return methods.map((method: string) => {
     const hd: ZemiHandlerDefinition = route[method];
@@ -34,6 +30,49 @@ const buildResponsesPerMethod = (
       return { [method]: Object.keys(hd.responses) };
     }
   });
+};
+
+const buildChildDefs = (
+  route: ZemiRoute,
+  parent: Record<string, ZemiRouteDefinition>,
+  name: string,
+  path: string
+) => {
+  if (route.routes) {
+    const toReturn: Record<string, ZemiRouteDefinition> = Object.assign(
+      {},
+      buildRouteDefinitions(route.routes, { name, path }),
+      parent
+    );
+    return toReturn;
+  } else {
+    return parent;
+  }
+};
+
+const buildDef = (route: ZemiRoute, prefix: NamedRoute): Record<string, ZemiRouteDefinition> => {
+  if (route.name) {
+    const name: string = prefix ? `${prefix.name}-${route.name}` : route.name;
+    const dirtyPath: string = prefix ? `${prefix.path}${route.path}` : route.path;
+    const path: string = parsePathByFramework(dirtyPath, "express");
+
+    const mine: Record<string, ZemiRouteDefinition> = {
+      [name]: buildRouteDefinition(path, name),
+    };
+    return buildChildDefs(route, mine, name, path);
+  }
+};
+
+const buildChildNamedRoutes = (
+  route: ZemiRoute,
+  parent: Record<string, ResponsesPerRoute>,
+  name: string
+): Record<string, ResponsesPerRoute> => {
+  if (route.routes) {
+    return Object.assign({}, buildResponsesPerNamedRoute(route.routes, name), parent);
+  } else {
+    return parent;
+  }
 };
 
 /**
@@ -46,10 +85,7 @@ const buildResponsesPerMethod = (
  * @return {ZemiRouteDefinition} - A route-definition with the name, path, parameters in the path, and reverse function for said path.
  * @type{(path: string, name:string)=> ZemiRouteDefinition}
  */
-export function buildRouteDefinition(
-  path: string,
-  name: string
-): ZemiRouteDefinition {
+export function buildRouteDefinition(path: string, name: string): ZemiRouteDefinition {
   const pathArray: Array<string> = path.split("/");
   const parameters: Array<string> = pathArray
     .filter((p) => p.includes(":"))
@@ -80,27 +116,7 @@ export function buildRouteDefinitions(
   routes: Array<ZemiRoute>,
   prefix?: NamedRoute
 ): Record<string, ZemiRouteDefinition> {
-  const namedRoutes = routes.map((r: ZemiRoute) => {
-    if (r.name) {
-      const name: string = prefix ? `${prefix.name}-${r.name}` : r.name;
-      const dirtyPath: string = prefix ? `${prefix.path}${r.path}` : r.path;
-      const path: string = parsePathByFramework(dirtyPath, "express");
-
-      const mine: Record<string, ZemiRouteDefinition> = {
-        [name]: buildRouteDefinition(path, name),
-      };
-      if (r.routes) {
-        const toReturn: Record<string, ZemiRouteDefinition> = Object.assign(
-          {},
-          buildRouteDefinitions(r.routes, { name, path }),
-          mine
-        );
-        return toReturn;
-      } else {
-        return mine;
-      }
-    }
-  });
+  const namedRoutes = routes.map((route: ZemiRoute) => buildDef(route, prefix));
   return Object.assign({}, ...namedRoutes);
 }
 
@@ -120,21 +136,11 @@ export function buildResponsesPerNamedRoute(
   const namedRoutes = routes.map((r: ZemiRoute) => {
     if (r.name) {
       const name: string = prefix ? `${prefix}-${r.name}` : r.name;
-
-      const responsesPerMethod: Array<Record<string, Array<string>>> =
-        buildResponsesPerMethod(r);
-
-      const mine = { [name]: Object.assign({}, ...responsesPerMethod) };
-
-      if (r.routes) {
-        return Object.assign(
-          {},
-          buildResponsesPerNamedRoute(r.routes, name),
-          mine
-        );
-      } else {
-        return mine;
-      }
+      const responsesPerMethod: Array<Record<string, Array<string>>> = buildResponsesPerMethod(r);
+      const mine: Record<string, ResponsesPerRoute> = {
+        [name]: Object.assign({}, ...responsesPerMethod),
+      };
+      return buildChildNamedRoutes(r, mine, name);
     }
   });
   return Object.assign({}, ...namedRoutes);
@@ -149,10 +155,7 @@ export function buildResponsesPerNamedRoute(
  * @return {string} - A valid path for the specified framework, that has parameters wrapped accordingly.
  * @type{(path: string)=> string}
  */
-export function parsePathByFramework(
-  path: string,
-  framework: "express" | "openapi"
-): string {
+export function parsePathByFramework(path: string, framework: "express" | "openapi"): string {
   const pathBits: Array<string> = path
     .split("/")
     .map((p) => wrapParameterByFramework(p, framework));
@@ -167,18 +170,12 @@ export function parsePathByFramework(
  * @return {Array<OpenApiParameterObject>} - An array of OpenApi ParameterObject.
  * @type{(path: string)=> Array<OpenApiParameterObject>}
  */
-export function paramPathToOpenApiParamObject(
-  path: string
-): Array<OpenApiParameterObject> {
+export function paramPathToOpenApiParamObject(path: string): Array<OpenApiParameterObject> {
   const paramBits: Array<string> = path
     .split("/")
     .filter((p) => p[0] === "{" && p[p.length - 1] === "}");
-  const noBracks: Array<string> = paramBits.map((pb) =>
-    pb.substring(1, pb.length - 1)
-  );
-  const paramsSeparatedList: Array<Array<string>> = noBracks.map((p) =>
-    p.split("|")
-  );
+  const noBracks: Array<string> = paramBits.map((pb) => pb.substring(1, pb.length - 1));
+  const paramsSeparatedList: Array<Array<string>> = noBracks.map((p) => p.split("|"));
   return paramsSeparatedList.map(([name, type]: Array<string>) => {
     return {
       name,

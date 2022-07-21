@@ -44,6 +44,26 @@ const buildMethod = (
   return methodDoc;
 };
 
+const buildParamObjs = (
+  route: ZemiRoute,
+  paramPath: string
+): Array<Array<OpenApiParameterObject>> => {
+  const pathParams: Array<OpenApiParameterObject> =
+    paramPathToOpenApiParamObject(paramPath);
+  const definitionParams: Array<OpenApiParameterObject> =
+    route.parameters || [];
+  return [pathParams, definitionParams];
+};
+
+const buildPathOperationObj = (
+  paramPath: string,
+  methods: Array<OpenApiOperationObject>
+): Record<string, Array<OpenApiOperationObject>> => {
+  return {
+    [parsePathByFramework(paramPath, "openapi")]: Object.assign({}, ...methods),
+  };
+};
+
 /**
  * Generates OpenApi Operation Objects from ZemiRoutes, path-parameters, and
  * definition-parameters passed in. This method folds all parameters at a path
@@ -91,11 +111,8 @@ function buildPathDocs(
   return routes.flatMap((route: ZemiRoute) => {
     const path: string = route.path;
     const paramPath: string = parentPath ? `${parentPath}${path}` : path;
+    const [pathParams, definitionParams] = buildParamObjs(route, paramPath);
 
-    const pathParams: Array<OpenApiParameterObject> =
-      paramPathToOpenApiParamObject(paramPath);
-    const definitionParams: Array<OpenApiParameterObject> =
-      route.parameters || [];
     const methods: Array<OpenApiOperationObject> = buildMethodDocs(
       route,
       pathParams,
@@ -103,12 +120,7 @@ function buildPathDocs(
     );
 
     const mine: Array<OpenApiOperationObject> = [
-      {
-        [parsePathByFramework(paramPath, "openapi")]: Object.assign(
-          {},
-          ...methods
-        ),
-      },
+      buildPathOperationObj(paramPath, methods),
     ];
 
     if (route.routes) {

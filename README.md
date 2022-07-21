@@ -1,15 +1,15 @@
 # zemi
 
 [![Github Build](https://github.com/yoaquim/zemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yoaquim/zemi/actions/workflows/ci.yml)
-[![Test Coverage](https://codeclimate.com/github/yoaquim/zemi/badges/coverage.svg)](https://codeclimate.com/github/yoaquim/zemi/coverage)
-[![Code Climate](https://codeclimate.com/github/yoaquim/zemi/badges/gpa.svg)](https://codeclimate.com/github/epoberezkin/ajv)
+[![Code Climate Coverage](https://codeclimate.com/github/yoaquim/zemi/badges/coverage.svg)](https://codeclimate.com/github/yoaquim/zemi/coverage)
+[![Code Climate Maintainability](https://codeclimate.com/github/yoaquim/zemi/badges/gpa.svg)](https://codeclimate.com/github/yoaquim/zemi)
 [![Snyk.io Vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
 
-[![npm version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
-[![types](https://badgen.net/npm/types/zemi)](https://github.com/yoaquim/zemi/tree/main/src/types)
-[![dependencies](https://badgen.net/bundlephobia/dependency-count/zemi)](https://github.com/yoaquim/zemi/blob/main/package.json#L20-L23)
-[![install size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
-[![license](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
+[![npm Version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
+[![Types](https://badgen.net/npm/types/zemi)](https://github.com/yoaquim/zemi/tree/main/src/types)
+[![Dependencies](https://badgen.net/bundlephobia/dependency-count/zemi)](https://github.com/yoaquim/zemi/blob/main/package.json#L20-L23)
+[![Install Size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
+[![License](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
 
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
@@ -320,7 +320,7 @@ Assume you have [`ZemiRoute`](#zemiroute)s defined at `src/routes/index.ts`.
 Create a file at the root (project) level named `zemi-openapi-spec-gen.ts`:
 
 ```ts
-import { OpenApiDoc, ZemiOpenApiSpecGenerator} from "zemi";
+import { OpenApiDoc, ZemiOpenApiSpecGenerator } from "zemi";
 import routes from "./src/routes";
 
 const doc: OpenApiDoc = {
@@ -532,13 +532,12 @@ Examples are available in the [examples](https://github.com/yoaquim/zemi/blob/ma
 
 
 4. [With Param Inheritance from Parent Routes](https://github.com/yoaquim/zemi/blob/main/examples/nested-route-param-inheritance.ts)
- 
+
 
 5. [Using `{paramName|paramType}`-style Parameters in Path](https://github.com/yoaquim/zemi/blob/main/examples/using-openapi-embedded-param-paths.ts)
- 
+
 
 6. [Using More OpenApi features](https://github.com/yoaquim/zemi/blob/main/examples/leveraging-open-api.ts)
-
 
 ## Limitations
 
