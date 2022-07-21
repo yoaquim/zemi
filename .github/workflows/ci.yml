@@ -40,12 +40,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -g yarn
-      - run: yarn install
-      - run: yarn build
       - uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: 657ce94c5d48a47197e89cc390e312941c455d13c7940f6448c697d6274b061f
         with:
-          coverageCommand: yarn coverage
+          coverageCommand: npm test
 
