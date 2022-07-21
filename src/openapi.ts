@@ -13,10 +13,36 @@ import {
   OpenApiPathItemObject,
   OpenApiReferenceObject,
 } from "./types/openapi.types";
-import {
-  paramPathToOpenApiParamObject,
-  paramPathToOpenApiPath,
-} from "./helpers";
+import { paramPathToOpenApiParamObject, parsePathByFramework } from "./helpers";
+
+const buildMethod = (
+  method: string,
+  methodDoc: object,
+  hd: ZemiHandlerDefinition,
+  parameters: Array<OpenApiReferenceObject | OpenApiParameterObject>
+) => {
+  const {
+    description,
+    summary,
+    responses,
+    operationId,
+    requestBody,
+    tags,
+    security,
+  } = hd;
+
+  methodDoc[method] = {
+    parameters,
+    description,
+    summary,
+    responses,
+    operationId,
+    requestBody,
+    tags,
+    security,
+  };
+  return methodDoc;
+};
 
 /**
  * Generates OpenApi Operation Objects from ZemiRoutes, path-parameters, and
@@ -44,26 +70,7 @@ function buildMethodDocs(
       > = hd.parameters || [];
       const parameters: Array<OpenApiReferenceObject | OpenApiParameterObject> =
         [...pathParams, ...definitionParams, ...methodParams];
-      const {
-        description,
-        summary,
-        responses,
-        operationId,
-        requestBody,
-        tags,
-        security,
-      } = hd;
-      methodDoc[method] = {
-        parameters,
-        description,
-        summary,
-        responses,
-        operationId,
-        requestBody,
-        tags,
-        security,
-      };
-      return methodDoc;
+      return buildMethod(method, methodDoc, hd, parameters);
     }
   });
 }
@@ -96,7 +103,12 @@ function buildPathDocs(
     );
 
     const mine: Array<OpenApiOperationObject> = [
-      { [paramPathToOpenApiPath(paramPath)]: Object.assign({}, ...methods) },
+      {
+        [parsePathByFramework(paramPath, "openapi")]: Object.assign(
+          {},
+          ...methods
+        ),
+      },
     ];
 
     if (route.routes) {

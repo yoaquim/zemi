@@ -10,8 +10,7 @@ import {
 import {
   buildRouteDefinitions,
   buildResponsesPerNamedRoute,
-  buildRouteDefinition,
-  paramPathToValidExpressPath,
+  parsePathByFramework,
 } from "./helpers";
 
 /**
@@ -46,7 +45,7 @@ export default function Zemi(
   });
 
   routes.forEach((route: ZemiRoute) => {
-    const path: string = paramPathToValidExpressPath(route.path);
+    const path: string = parsePathByFramework(route.path, "express");
     const fullPath = __parentPath ? `${__parentPath}${path}` : path;
 
     route.middleware &&

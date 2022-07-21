@@ -1,14 +1,16 @@
 # zemi
-![build branch parameter](https://github.com/yoaquim/zemi/actions/workflows/tests.yml/badge.svg?branch=main)
-[![codecov](https://codecov.io/gh/yoaquim/zemi/branch/main/graph/badge.svg)](https://codecov.io/gh/yoaquim/zemi)
-[![Known Vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
-[![NPM Version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
 
-[//]: # ([![code style: prettier]&#40;https://img.shields.io/badge/code_style-prettier-ff69b4.svg&#41;]&#40;https://github.com/prettier/prettier&#41;)
-![](https://badgen.net/npm/license/zemi)
-![](https://badgen.net/npm/types/zemi)
-![](https://badgen.net/bundlephobia/dependency-count/zemi)
+[![github build](https://github.com/yoaquim/zemi/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/yoaquim/zemi/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/yoaquim/zemi/branch/main/graph/badge.svg)](https://codecov.io/gh/yoaquim/zemi)
+[![vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
+[![npm version](https://img.shields.io/npm/v/zemi?color=33cd56&logo=npm)](https://www.npmjs.com/package/zemi)
+
+[![license](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
+[![types](https://badgen.net/npm/types/zemi)](https://github.com/yoaquim/zemi/tree/main/src/types)
+[![dependencies](https://badgen.net/bundlephobia/dependency-count/zemi)](https://github.com/yoaquim/zemi/blob/main/package.json#L20-L23)
 [![install size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
+
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 

@@ -7,6 +7,35 @@ import {
 import { NamedRoute } from "./types/helpers.types";
 import { OpenApiParameterObject } from "./types/openapi.types";
 
+const wrappedInBrackets = (p: string): boolean =>
+  p[0] === "{" && p[p.length - 1] === "}";
+
+const getParamKey = (p: string): string => p.split("{")[1].split("|")[0];
+
+const wrapParameterByFramework = (
+  p: string,
+  framework: "express" | "openapi"
+): string => {
+  if (wrappedInBrackets(p)) {
+    if (framework === "express") return `:${getParamKey(p)}`;
+    else if (framework === "openapi") return `{${getParamKey(p)}}`;
+  } else {
+    return p;
+  }
+};
+
+const buildResponsesPerMethod = (
+  route: ZemiRoute
+): Array<Record<string, Array<string>>> => {
+  const methods = Object.values(ZemiMethod);
+  return methods.map((method: string) => {
+    const hd: ZemiHandlerDefinition = route[method];
+    if (hd && hd.responses) {
+      return { [method]: Object.keys(hd.responses) };
+    }
+  });
+};
+
 /**
  * Builds a route-definition with the name and path specified.
  * Will build an array of strings with the parameters specified in the path, and
@@ -55,7 +84,7 @@ export function buildRouteDefinitions(
     if (r.name) {
       const name: string = prefix ? `${prefix.name}-${r.name}` : r.name;
       const dirtyPath: string = prefix ? `${prefix.path}${r.path}` : r.path;
-      const path: string = paramPathToValidExpressPath(dirtyPath);
+      const path: string = parsePathByFramework(dirtyPath, "express");
 
       const mine: Record<string, ZemiRouteDefinition> = {
         [name]: buildRouteDefinition(path, name),
@@ -92,15 +121,11 @@ export function buildResponsesPerNamedRoute(
     if (r.name) {
       const name: string = prefix ? `${prefix}-${r.name}` : r.name;
 
-      const methods = Object.values(ZemiMethod);
-      const responsesPerMethod = methods.map((method: string) => {
-        const hd: ZemiHandlerDefinition = r[method];
-        if (hd && hd.responses) {
-          return { [method]: Object.keys(hd.responses) };
-        }
-      });
+      const responsesPerMethod: Array<Record<string, Array<string>>> =
+        buildResponsesPerMethod(r);
 
       const mine = { [name]: Object.assign({}, ...responsesPerMethod) };
+
       if (r.routes) {
         return Object.assign(
           {},
@@ -117,41 +142,20 @@ export function buildResponsesPerNamedRoute(
 
 /**
  * Converts a zemi-style path -- where parameters are specified as
- * `{param|type}` -- to a valid Express path (parameters are defined as
- * `:param`). Used to generate paths for Express routes, from ZemiRoutes.
+ * `{param|type}` -- to a valid ExpressJS (parameters prefixed by ':') or
+ * OpenApi path (parameters wrapped as `{param}`).
  * @param path {string} - A path that has parameters specified as `{param|type}`.
- * @return {string} - A valid Express path, that has parameters specified as `:param`.
+ * @param framework {"express" | "openapi"} - How and for what to parse this param: ExpressJS format or OpenApi format
+ * @return {string} - A valid path for the specified framework, that has parameters wrapped accordingly.
  * @type{(path: string)=> string}
  */
-export function paramPathToValidExpressPath(path: string): string {
-  const pathBits: Array<string> = path.split("/").map((p) => {
-    if (p[0] === "{" && p[p.length - 1] === "}") {
-      const paramKey = p.split("{")[1].split("|")[0];
-      return `:${paramKey}`;
-    } else {
-      return p;
-    }
-  });
-  return pathBits.join("/");
-}
-
-/**
- * Converts a zemi-style path -- where parameters are specified as
- * `{param|type}` -- to a valid OpenApi path (parameters are defined as
- * `{param}`). Used to generate paths for OpenApi spec, from ZemiRoutes.
- * @param path {string} - A path that has parameters specified as `{param|type}`.
- * @return {string} - A valid OpenApi path, that has parameters specified as `{param}`.
- * @type{(path: string)=> string}
- */
-export function paramPathToOpenApiPath(path: string): string {
-  const pathBits: Array<string> = path.split("/").map((p) => {
-    if (p[0] === "{" && p[p.length - 1] === "}") {
-      const paramKey = p.split("{")[1].split("|")[0];
-      return `{${paramKey}}`;
-    } else {
-      return p;
-    }
-  });
+export function parsePathByFramework(
+  path: string,
+  framework: "express" | "openapi"
+): string {
+  const pathBits: Array<string> = path
+    .split("/")
+    .map((p) => wrapParameterByFramework(p, framework));
   return pathBits.join("/");
 }
 

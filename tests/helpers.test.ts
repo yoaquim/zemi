@@ -3,15 +3,9 @@ import {
   buildResponsesPerNamedRoute,
   buildRouteDefinition,
   paramPathToOpenApiParamObject,
-  paramPathToValidExpressPath,
-  paramPathToOpenApiPath,
+  parsePathByFramework,
 } from "../src/helpers";
-import {
-  ZemiMethod,
-  ZemiRequest,
-  ZemiResponse,
-  ZemiRoute,
-} from "../src/types/core.types";
+import { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "../src";
 
 const { GET, POST } = ZemiMethod;
 
@@ -214,37 +208,23 @@ describe("buildRouteDef can...", () => {
   });
 });
 
-describe("paramPathToValidExpressPath can...", () => {
+describe("parsePathByFramework can...", () => {
   test("convert a zemi path with params into a valid Express URL path with ':' prepended params", () => {
     const url: string = "/pets/{breed|string}/{id|number}/details";
-    const result = paramPathToValidExpressPath(url);
+    const result = parsePathByFramework(url, "express");
     expect(result).toEqual("/pets/:breed/:id/details");
   });
 
-  // test("convert a zemi path with params into an OpenAPI path with '{}' encapsulated params", () => {
-  //     const url: string = '/pets/{breed|string}/{id|number}/details'
-  //     const result = paramPathToValidPath(url)
-  //     expect(result).toEqual('/pets/{breed}/{id}/details')
-  // })
-
   test("return a valid Express URL when no params present", () => {
     const url: string = "/pets/dogs/breeds";
-    const result = paramPathToValidExpressPath(url);
+    const result = parsePathByFramework(url, "express");
     expect(result).toEqual("/pets/dogs/breeds");
   });
-});
 
-describe("paramPathToOpenApiPath can...", () => {
   test("convert a zemi path with params into an OpenAPI path with '{}' encapsulated params", () => {
     const url: string = "/pets/{breed|string}/{id|number}/details";
-    const result = paramPathToOpenApiPath(url);
+    const result = parsePathByFramework(url, "openapi");
     expect(result).toEqual("/pets/{breed}/{id}/details");
-  });
-
-  test("return a valid Express URL when no params present", () => {
-    const url: string = "/pets/dogs/breeds";
-    const result = paramPathToOpenApiPath(url);
-    expect(result).toEqual("/pets/dogs/breeds");
   });
 });
 
