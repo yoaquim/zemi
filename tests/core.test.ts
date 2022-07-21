@@ -6,7 +6,8 @@ import {
   ZemiRequest,
   ZemiResponse,
   ZemiRouteDefinition,
-} from "../src/types/core.types";
+  ZemiRequestHandler,
+} from "../src";
 import zemi from "../src/core";
 
 const { GET, POST } = ZemiMethod;
@@ -24,20 +25,33 @@ async function testPOST(path: string, data: object, routes: Array<ZemiRoute>) {
   return request(app).post(path).set("Accept", "application/json").send(data);
 }
 
+function buildRoute(
+  name: string,
+  path: string,
+  method: ZemiMethod,
+  handler: ZemiRequestHandler
+): ZemiRoute {
+  return {
+    name,
+    path,
+    [method]: { handler },
+  };
+}
+
+function buildBasicPetsRoute(handler: ZemiRequestHandler) {
+  return buildRoute("pets", "/pets", GET, handler);
+}
+
 describe("zemi core functionality can...", () => {
   test("create a route from the definition passed to it.", async () => {
     const routes: Array<ZemiRoute> = [
-      {
-        name: "pets",
-        path: "/pets",
-        [GET]: {
-          handler: function (request: Request, response: Response) {
-            response.status(200).json({ pets: ["dogs", "cats"] });
-          },
-        },
-      },
+      buildBasicPetsRoute(function (
+        request: ZemiRequest,
+        response: ZemiResponse
+      ) {
+        response.status(200).json({ pets: ["dogs", "cats"] });
+      }),
     ];
-
     const response = await testGET("/pets", routes);
     expect(response.status).toEqual(200);
     expect(response.body.pets).toEqual(["dogs", "cats"]);
@@ -45,19 +59,18 @@ describe("zemi core functionality can...", () => {
 
   test("access params defined in the path via the request.", async () => {
     const routes: Array<ZemiRoute> = [
-      {
-        name: "petsById",
-        path: "/pets/:id",
-        [GET]: {
-          handler: function (request: Request, response: Response) {
-            const id = request.params.id;
-            response.status(200).json({
-              id,
-              dogs: ["Kali", "Ahkila"],
-            });
-          },
-        },
-      },
+      buildRoute(
+        "petsById",
+        "/pets/:id",
+        GET,
+        function (request: Request, response: Response) {
+          const id = request.params.id;
+          response.status(200).json({
+            id,
+            dogs: ["Kali", "Ahkila"],
+          });
+        }
+      ),
     ];
 
     const response = await testGET("/pets/99", routes);
@@ -68,24 +81,16 @@ describe("zemi core functionality can...", () => {
 
   test("access query object in the path via the request.", async () => {
     const routes: Array<ZemiRoute> = [
-      {
-        name: "pets",
-        path: "/pets",
-        [GET]: {
-          handler: function (request: Request, response: Response) {
-            response.status(200).json({
-              query: request.query,
-              dogs: ["Kali", "Ahkila"],
-            });
-          },
-        },
-      },
+      buildBasicPetsRoute(function (request: Request, response: Response) {
+        response.status(200).json({
+          query: request.query,
+        });
+      }),
     ];
 
     const response = await testGET("/pets?foo=bar&baz=beez", routes);
     expect(response.status).toEqual(200);
     expect(response.body.query).toEqual({ foo: "bar", baz: "beez" });
-    expect(response.body.dogs).toEqual(["Kali", "Ahkila"]);
   });
 
   test("create a route with child routes when specified in the definition.", async () => {
