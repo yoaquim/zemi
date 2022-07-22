@@ -27,20 +27,38 @@ Features:
 
 # Table of Contents
 
-1. [Data-driven](#data-driven)
-2. [Reverse-routing](#reverse-routing)
-3. [Middleware](#middleware)
-4. [Parameter Inheritance](#parameter-inheritance)
-5. [OpenApi](#openapi)
+1. [Routing](#routing)
+    1. [Data-driven](#data-driven)
+    2. [Reverse-routing](#reverse-routing)
+    3. [Middleware](#middleware)
+    4. [Parameter Inheritance](#parameter-inheritance)
+2. [OpenApi](#openapi)
     1. [Defining Route Parameters](#defining-route-parameters)
     2. [Generating an OpenApi JSON spec](#generating-an-openapi-json-spec)
     3. [Leveraging All OpenApi Features](#leveraging-all-openapi-features)
     4. [Why is this better than directly defining an OpenApi JSON spec?](#why-is-this-better-than-directly-defining-an-openapi-json-spec)
-6. [Interfaces](#interfaces)
-7. [Examples](#examples)
-8. [Limitations](#limitations)
+3. [Types](#types)
+    1. [ZemiMethod](#zemimethod)
+    2. [ZemiHandlerDefinition](#zemihandlerdefinition)
+    3. [ZemiRequestHandler](#zemirequesthandler)
+    4. [ZemiRequest](#zemirequest)
+    5. [ZemiResponse](#zemiresponse)
+    6. [ZemiRouteDefinition](#zemiroutedefinition)
+    7. [ZemiRoute](#zemiroute)
+    8. [ZemiOpenApiSpecGenerator](#zemiopenapispecgenerator)
+    9. [ZemiOpenApiSpecGenerationOptions](#zemiopenapispecgenerationoptions)
+4. [Examples](#examples)
+   1. [Simple](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
+   2. [With Middleware](https://github.com/yoaquim/zemi/blob/main/examples/with-middleware.ts)
+   3. [Using Reverse Routing](https://github.com/yoaquim/zemi/blob/main/examples/using-reverse-routing.ts)
+   4. [With Param Inheritance from Parent Routes](https://github.com/yoaquim/zemi/blob/main/examples/nested-route-param-inheritance.ts)
+   5. [Using `{paramName|paramType}`-style Parameters in Path](https://github.com/yoaquim/zemi/blob/main/examples/using-openapi-embedded-param-paths.ts)
+   6. [Using More OpenApi features](https://github.com/yoaquim/zemi/blob/main/examples/leveraging-open-api.ts)
+5. [Limitations](#limitations)
 
 <br>
+
+## Routing
 
 ### Data-driven
 
@@ -542,7 +560,7 @@ Accepts an optional [`ZemiOpenApiDocGenerationOptions`](#zemiopenapispecgenerati
 (
   doc: OpenApiDoc,
   routes: Array<ZemiRoute>,
-  options: ZemiOpenApiDocGenerationOptions
+  options?: ZemiOpenApiDocGenerationOptions
 ) => void
 ```
 
