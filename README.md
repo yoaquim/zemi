@@ -16,10 +16,8 @@
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
 Features:
-
 - optional, [out-of-the-box support](#openapi) for [OpenAPI](https://www.openapis.org/)
 - [reverse-routing](#reverse-routing)
-- supports `GET`, `POST`, `PUT`, `DELETE`, and `OPTIONS` HTTP methods
 - [path-parameter inheritance](#parameter-inheritance) (aka `mergeParams:true`)
 - route-level [middleware support](#middleware)
 
