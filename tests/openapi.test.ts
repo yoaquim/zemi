@@ -1,10 +1,5 @@
 import ZemiOpenApiSpecGenerator, { asyncWriteFile } from "../src/openapi";
-import {
-  ZemiRequest,
-  ZemiResponse,
-  ZemiRoute,
-  ZemiMethod,
-} from "../src/types/core.types";
+import { ZemiRequest, ZemiResponse, ZemiRoute, ZemiMethod } from "../src/types/core.types";
 import { OpenApiDoc } from "../src/types/openapi.types";
 
 //============================================
@@ -191,9 +186,7 @@ describe("ZemiOpenApiSpecGenerator can...", () => {
 describe("asyncWriteFile can...", () => {
   test("write file to specified path.", async () => {
     console.log = jest.fn();
-    const mockWriteFile = <(path: string, data: any, options: object) => void>(
-      jest.fn()
-    );
+    const mockWriteFile = <(path: string, data: any, options: object) => void>jest.fn();
     const path = "/foo/bar/baz/openapi.json";
     const data = { foo: "bar" };
     await asyncWriteFile(mockWriteFile, path, data);
@@ -204,11 +197,9 @@ describe("asyncWriteFile can...", () => {
     const logger = console.log;
     console.log = jest.fn();
     const err = new Error("FAILED");
-    const mockWriteFile = <(path: string, data: any, options: object) => void>(
-      jest.fn(() => {
-        throw err;
-      })
-    );
+    const mockWriteFile = <(path: string, data: any, options: object) => void>jest.fn(() => {
+      throw err;
+    });
 
     const path = "/failed/to/write";
     await asyncWriteFile(mockWriteFile, path, {});

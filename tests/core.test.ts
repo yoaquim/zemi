@@ -45,10 +45,7 @@ function buildBasicPetsRoute(handler: ZemiRequestHandler) {
 describe("zemi core functionality can...", () => {
   test("create a route from the definition passed to it.", async () => {
     const routes: Array<ZemiRoute> = [
-      buildBasicPetsRoute(function (
-        request: ZemiRequest,
-        response: ZemiResponse
-      ) {
+      buildBasicPetsRoute(function (request: ZemiRequest, response: ZemiResponse) {
         response.status(200).json({ pets: ["dogs", "cats"] });
       }),
     ];
@@ -59,18 +56,13 @@ describe("zemi core functionality can...", () => {
 
   test("access params defined in the path via the request.", async () => {
     const routes: Array<ZemiRoute> = [
-      buildRoute(
-        "petsById",
-        "/pets/:id",
-        GET,
-        function (request: Request, response: Response) {
-          const id = request.params.id;
-          response.status(200).json({
-            id,
-            dogs: ["Kali", "Ahkila"],
-          });
-        }
-      ),
+      buildRoute("petsById", "/pets/:id", GET, function (request: Request, response: Response) {
+        const id = request.params.id;
+        response.status(200).json({
+          id,
+          dogs: ["Kali", "Ahkila"],
+        });
+      }),
     ];
 
     const response = await testGET("/pets/99", routes);
@@ -206,11 +198,7 @@ describe("zemi core functionality can...", () => {
       },
     ];
 
-    const response = await testPOST(
-      "/new-pet/99",
-      { new_pet: "rabbit" },
-      routes
-    );
+    const response = await testPOST("/new-pet/99", { new_pet: "rabbit" }, routes);
     expect(response.status).toEqual(200);
     expect(response.body.new_pet).toEqual("rabbit");
     expect(response.body.id).toEqual("99");
@@ -236,11 +224,7 @@ describe("zemi core functionality can...", () => {
       },
     ];
 
-    const postResponse = await testPOST(
-      "/new-item",
-      { new_item: "sponge" },
-      routes
-    );
+    const postResponse = await testPOST("/new-item", { new_item: "sponge" }, routes);
     expect(postResponse.status).toEqual(200);
     expect(postResponse.body.new_item).toEqual("sponge");
 
@@ -423,33 +407,21 @@ describe("zemi core functionality can...", () => {
   });
 
   test("correctly build paths for defined-routes when object being access by nested routes", async () => {
-    const petsHandler = function (
-      request: ZemiRequest,
-      response: ZemiResponse
-    ) {
+    const petsHandler = function (request: ZemiRequest, response: ZemiResponse) {
       const { routeDefinitions } = request;
       response.status(200).json({ routeDefinitions });
     };
 
-    const dogsHandler = function (
-      request: ZemiRequest,
-      response: ZemiResponse
-    ) {
+    const dogsHandler = function (request: ZemiRequest, response: ZemiResponse) {
       response.status(200).json({ dogs: ["corgi", "labrador", "poodle"] });
     };
 
-    const catsHandler = function (
-      request: ZemiRequest,
-      response: ZemiResponse
-    ) {
+    const catsHandler = function (request: ZemiRequest, response: ZemiResponse) {
       const routeDefs = request.routeDefinitions;
       response.status(200).json({ routeDefs });
     };
 
-    const tigersHandler = function (
-      request: ZemiRequest,
-      response: ZemiResponse
-    ) {
+    const tigersHandler = function (request: ZemiRequest, response: ZemiResponse) {
       // Tigers are just cats, so redirect to /cats
       const routeDefinitions = request.routeDefinitions;
       response.json({ routeDefinitions });

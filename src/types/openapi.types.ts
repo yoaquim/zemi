@@ -60,10 +60,7 @@ export interface OpenApiMediaTypeObject {
 
 export interface OpenApiRequestBodyObject {
   description?: string;
-  content?: Record<
-    string,
-    { schema: OpenApiReferenceObject | OpenApiMediaTypeObject }
-  >;
+  content?: Record<string, { schema: OpenApiReferenceObject | OpenApiMediaTypeObject }>;
   required?: boolean | false;
 }
 
@@ -95,10 +92,7 @@ export interface OpenApiResponseObject {
   description?: string;
   headers?: Record<string, OpenApiReferenceObject | OpenApiHeaderObject>;
   links?: Record<string, OpenApiReferenceObject | OpenApiLinkObject>;
-  content?: Record<
-    string,
-    { schema: OpenApiReferenceObject | OpenApiSchemaObject }
-  >;
+  content?: Record<string, { schema: OpenApiReferenceObject | OpenApiSchemaObject }>;
 }
 
 export interface OpenApiServerVariableObject {
@@ -220,27 +214,15 @@ export interface OpenApiDoc {
   components?: {
     schemas?: Record<string, OpenApiReferenceObject | OpenApiSchemaObject>;
     responses?: Record<string, OpenApiReferenceObject | OpenApiResponseObject>;
-    parameters?: Record<
-      string,
-      OpenApiReferenceObject | OpenApiParameterObject
-    >;
+    parameters?: Record<string, OpenApiReferenceObject | OpenApiParameterObject>;
     examples?: Record<string, OpenApiReferenceObject | OpenApiExampleObject>;
-    requestBodies?: Record<
-      string,
-      OpenApiReferenceObject | OpenApiRequestBodyObject
-    >;
+    requestBodies?: Record<string, OpenApiReferenceObject | OpenApiRequestBodyObject>;
     headers?: Record<string, OpenApiReferenceObject | OpenApiHeaderObject>;
-    securitySchemes?: Record<
-      string,
-      OpenApiReferenceObject | OpenApiSecuritySchemeObject
-    >;
+    securitySchemes?: Record<string, OpenApiReferenceObject | OpenApiSecuritySchemeObject>;
     links?: Record<string, OpenApiReferenceObject | OpenApiLinkObject>;
     callbacks?: Record<string, OpenApiReferenceObject | OpenApiCallbackObject>;
   };
   security?: Array<OpenApiSecurityRequirementObject>;
   tags?: Array<OpenApiTagsObject>;
-  externalDocs?: Record<
-    string,
-    OpenApiReferenceObject | OpenApiExternalDocumentationObject
-  >;
+  externalDocs?: Record<string, OpenApiReferenceObject | OpenApiExternalDocumentationObject>;
 }

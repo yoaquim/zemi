@@ -27,18 +27,11 @@ import {
 export default function Zemi(
   routes: Array<ZemiRoute>,
   router: Router = Router({ mergeParams: true }),
-  __routeDefinitions: Record<
-    string,
-    ZemiRouteDefinition
-  > = buildRouteDefinitions(routes),
+  __routeDefinitions: Record<string, ZemiRouteDefinition> = buildRouteDefinitions(routes),
   __parentPath?: string
 ): Router {
   const allowedResponseHttpCodes = buildResponsesPerNamedRoute(routes);
-  router.use(function (
-    request: ZemiRequest,
-    response: ZemiResponse,
-    next: NextFunction
-  ) {
+  router.use(function (request: ZemiRequest, response: ZemiResponse, next: NextFunction) {
     request.routeDefinitions = __routeDefinitions;
     request.allowedResponseHttpCodes = allowedResponseHttpCodes;
     next();
@@ -50,9 +43,8 @@ export default function Zemi(
 
     route.middleware &&
       route.middleware.forEach((middleware: RequestHandler) =>
-        router.use(
-          (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
-            middleware(request, response, next)
+        router.use((request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
+          middleware(request, response, next)
         )
       );
 
@@ -68,19 +60,13 @@ export default function Zemi(
           .map((rdk: string) => __routeDefinitions[rdk])
           .filter((rd: ZemiRouteDefinition) => rd.path === fullPath)[0];
 
-        router[method](
-          path,
-          (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
-            handlerDefinition.handler(request, response, next, routeDef)
+        router[method](path, (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
+          handlerDefinition.handler(request, response, next, routeDef)
         );
       }
     });
 
-    route.routes &&
-      router.use(
-        path,
-        Zemi(route.routes, router, __routeDefinitions, fullPath)
-      );
+    route.routes && router.use(path, Zemi(route.routes, router, __routeDefinitions, fullPath));
   });
 
   return router;

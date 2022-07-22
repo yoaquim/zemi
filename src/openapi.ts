@@ -21,15 +21,7 @@ const buildMethod = (
   hd: ZemiHandlerDefinition,
   parameters: Array<OpenApiReferenceObject | OpenApiParameterObject>
 ) => {
-  const {
-    description,
-    summary,
-    responses,
-    operationId,
-    requestBody,
-    tags,
-    security,
-  } = hd;
+  const { description, summary, responses, operationId, requestBody, tags, security } = hd;
 
   methodDoc[method] = {
     parameters,
@@ -48,10 +40,8 @@ const buildParamObjs = (
   route: ZemiRoute,
   paramPath: string
 ): Array<Array<OpenApiParameterObject>> => {
-  const pathParams: Array<OpenApiParameterObject> =
-    paramPathToOpenApiParamObject(paramPath);
-  const definitionParams: Array<OpenApiParameterObject> =
-    route.parameters || [];
+  const pathParams: Array<OpenApiParameterObject> = paramPathToOpenApiParamObject(paramPath);
+  const definitionParams: Array<OpenApiParameterObject> = route.parameters || [];
   return [pathParams, definitionParams];
 };
 
@@ -85,11 +75,13 @@ function buildMethodDocs(
     const methodDoc = {};
     const hd: ZemiHandlerDefinition = route[method];
     if (hd) {
-      const methodParams: Array<
-        OpenApiReferenceObject | OpenApiParameterObject
-      > = hd.parameters || [];
-      const parameters: Array<OpenApiReferenceObject | OpenApiParameterObject> =
-        [...pathParams, ...definitionParams, ...methodParams];
+      const methodParams: Array<OpenApiReferenceObject | OpenApiParameterObject> =
+        hd.parameters || [];
+      const parameters: Array<OpenApiReferenceObject | OpenApiParameterObject> = [
+        ...pathParams,
+        ...definitionParams,
+        ...methodParams,
+      ];
       return buildMethod(method, methodDoc, hd, parameters);
     }
   });
@@ -119,15 +111,10 @@ function buildPathDocs(
       definitionParams
     );
 
-    const mine: Array<OpenApiOperationObject> = [
-      buildPathOperationObj(paramPath, methods),
-    ];
+    const mine: Array<OpenApiOperationObject> = [buildPathOperationObj(paramPath, methods)];
 
     if (route.routes) {
-      const childRoutesList: Array<OpenApiPathItemObject> = buildPathDocs(
-        route.routes,
-        path
-      );
+      const childRoutesList: Array<OpenApiPathItemObject> = buildPathDocs(route.routes, path);
       return [...mine, ...childRoutesList];
     } else {
       return mine;
@@ -183,9 +170,7 @@ export default async function ZemiOpenApiSpecGenerator({
   options?: ZemiOpenApiSpecGenerationOptions;
 }): Promise<OpenApiDoc> {
   const whereToWrite =
-    options && options.path
-      ? options.path
-      : join(dirname(require.main.filename), "openapi.json");
+    options && options.path ? options.path : join(dirname(require.main.filename), "openapi.json");
   const pathDocs: Array<Record<string, any>> = buildPathDocs(routes);
   const paths = Object.assign({}, ...pathDocs);
   const document = Object.assign({}, doc, { paths });
@@ -196,11 +181,7 @@ export default async function ZemiOpenApiSpecGenerator({
   console.log(JSON.stringify(document));
   console.log("\n--\n");
 
-  await asyncWriteFile(
-    fsPromises.writeFile,
-    whereToWrite,
-    JSON.stringify(document)
-  ).then(() =>
+  await asyncWriteFile(fsPromises.writeFile, whereToWrite, JSON.stringify(document)).then(() =>
     console.log(`Finished writing OpenAPI spec to ${whereToWrite}.\n`)
   );
   return document;

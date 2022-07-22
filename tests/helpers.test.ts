@@ -52,9 +52,9 @@ describe("buildRouteDefinitions can...", () => {
     expect(result["plants-carnivore"].reverse({ name: "maneater" })).toBe(
       "/plants/carnivore/maneater"
     );
-    expect(
-      result["plants-carnivore-dangerous"].reverse({ name: "maneater" })
-    ).toBe("/plants/carnivore/maneater/dangerous");
+    expect(result["plants-carnivore-dangerous"].reverse({ name: "maneater" })).toBe(
+      "/plants/carnivore/maneater/dangerous"
+    );
     expect(result).toEqual({
       pets: {
         name: "pets",
@@ -202,9 +202,7 @@ describe("buildRouteDef can...", () => {
     expect(path).toEqual(p);
     expect(name).toEqual(n);
     expect(parameters).toEqual(["animal", "id"]);
-    expect(reverse({ animal: "dog", id: "99" })).toEqual(
-      "/pets/dog/available/99"
-    );
+    expect(reverse({ animal: "dog", id: "99" })).toEqual("/pets/dog/available/99");
   });
 });
 
