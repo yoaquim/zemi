@@ -23,6 +23,8 @@ Features:
 - [path-parameter inheritance](#parameter-inheritance) (aka `mergeParams:true`)
 - route-level [middleware support](#middleware)
 
+<br>
+
 # Table of Contents
 
 1. [Data-driven](#data-driven)
@@ -37,6 +39,8 @@ Features:
 6. [Interfaces](#interfaces)
 7. [Examples](#examples)
 8. [Limitations](#limitations)
+
+<br>
 
 ### Data-driven
 
@@ -101,6 +105,8 @@ Generates an API like:
 | `/pets/cats`            | `Cannot GET /pets/cats/` (since it was not defined) |
 | `/pets/cats/2`          | `{"result":"Daphne"}`                               |
 
+<br>
+
 ### Reverse-routing
 
 zemi builds route-definitions for all routes and adds them to the [`ZemiRequest`](#zemirequest) passed to the handler function.
@@ -137,6 +143,8 @@ Returns:
 ```
 
 This allows you to generate links, redirect, and change path values without having to hardcode strings and change them later.
+
+<br>
 
 ### Middleware
 
@@ -184,6 +192,8 @@ const routes: Array<ZemiRoute> = [
 
 The middleware function `logRouteDefs` defined at the `dogBreeds` level will be applied to all the methods at that level and all nested routes — which means our `dogsByBreedById` route will gain that functionality also.
 
+<br>
+
 ### Parameter Inheritance
 
 As show in previous examples, parameters defined at parent routes are passed and available to nested routes.
@@ -230,6 +240,8 @@ const routes: Array<ZemiRoute> = [
 
 The `newDogsByBreedByIdDetailsSection` route (path: `/pets/dogs/:breed/:id/details/:section/new`) will have `breed`, `id`, and `section` available as request parameters in the ZemiRequest object.
 
+<br>
+
 ## OpenApi
 
 zemi supports [OpenAPI](https://www.openapis.org/) out-of-the-box — but it's completely optional.
@@ -239,6 +251,8 @@ It has extensive [Typescript support for OpenApi](https://github.com/yoaquim/zem
 You can forgo it entirely, use every supported feature, or just the bare-minimum as needed.
 
 It comes with a OpenApi spec generator — [`ZemiOpenApiSpecGenerator`](#zemiopenapispecgenerator) — which will create and save an `openapi.json` specification of your API.
+
+<br>
 
 ### Defining Route Parameters
 
@@ -315,6 +329,8 @@ This will:
 - generate a valid OpenApi path for that route
 - extract the name (anything _before_ `|`) and the schema type (anything _after_ `|`) for use in the OpenApi parameter definition
 
+<br>
+
 ### Generating an OpenApi JSON spec
 
 Assume you have [`ZemiRoute`](#zemiroute)s defined at `src/routes/index.ts`.
@@ -354,6 +370,8 @@ This will generate an `openapi.json` at that same dir level.
 
 Note that you can pass an optional `options` object specifying the `path` you want to save the spec to.
 
+<br>
+
 ### Leveraging All OpenApi Features
 
 zemi breaks down OpenApi into two parts:
@@ -369,6 +387,8 @@ Paths are specified via [`ZemiRoute`](#zemiroute)s (although some general doc sp
 
 Combining both of these approaches, you can build a complete OpenApi spec.
 
+<br>
+
 ### Why is this better than directly defining an OpenApi JSON spec?
 
 1. It's code: types, auto-completion, and all the benefits you get with code on a modern IDE.
@@ -379,7 +399,9 @@ Combining both of these approaches, you can build a complete OpenApi spec.
 
 3. Path generation: path and method definitions are, at the least, partly generated; more so if you want a straightforward, simple spec.
 
-## Interfaces
+<br>
+
+## Types
 
 ### `ZemiMethod`
 
@@ -394,6 +416,8 @@ The HTTP methods supported by [`ZemiRoute`](#zemiroute).
 | `PUT`     | `put`     |
 | `DELETE`  | `delete`  |
 | `OPTIONS` | `options` |
+
+<br>
 
 ### `ZemiHandlerDefinition`
 
@@ -424,6 +448,8 @@ the key function [`handler: ZemiRequestHandler`](#zemirequesthandler), which is 
 }
 ```
 
+<br>
+
 ### `ZemiRequestHandler`
 
 How to handle incoming requests for this route method; basically `express.RequestHandler`, but gets passed its own request and response versions, plus adds that routes [`ZemiRouteDefinition`](#zemiroutedefinition) as an optional fourth param.
@@ -436,6 +462,8 @@ How to handle incoming requests for this route method; basically `express.Reques
   routeDef: ZemiRouteDefinition
 ) => void
 ```
+
+<br>
 
 ### `ZemiRequest`
 
@@ -455,11 +483,15 @@ A wrapper for `express.Request`; adds `routeDefinitions` and `allowedResponseHtt
 
 ```
 
+<br>
+
 ### `ZemiResponse`
 
 *extends `express.Response`*
 
 Just a wrapper for future-proofing; same as `express.Response`.
+
+<br>
 
 ### `ZemiRouteDefinition`
 
@@ -475,6 +507,8 @@ Also provides a `reverse` function that, when invoked with an object that has pa
   reverse: (parameterValues: object) => string;
 }
 ```
+
+<br>
 
 ### `ZemiRoute`
 
@@ -496,6 +530,8 @@ It must be provided a `name: string` and `path: string`; a [`ZemiMethod`](#zemim
 }
 ```
 
+<br>
+
 ### `ZemiOpenApiSpecGenerator`
 
 Takes an [`OpenApiDoc`][3] object and an array of [`ZemiRoute`](#zemiroute)s to generate an `opeanapi.json` spec.
@@ -510,6 +546,8 @@ Accepts an optional [`ZemiOpenApiDocGenerationOptions`](#zemiopenapispecgenerati
 ) => void
 ```
 
+<br>
+
 ### `ZemiOpenApiSpecGenerationOptions`
 
 Lets you provide a `path: string` value that specifies the location of where to save the `openapi.json` spec.
@@ -519,6 +557,8 @@ Lets you provide a `path: string` value that specifies the location of where to 
   path: string
 }
 ```
+
+<br>
 
 ## Examples
 
@@ -540,6 +580,8 @@ Examples are available in the [examples](https://github.com/yoaquim/zemi/blob/ma
 
 
 6. [Using More OpenApi features](https://github.com/yoaquim/zemi/blob/main/examples/leveraging-open-api.ts)
+
+<br>
 
 ## Limitations
 
