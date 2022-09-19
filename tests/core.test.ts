@@ -12,6 +12,23 @@ import zemi from "../src/core";
 
 const { GET, POST } = ZemiMethod;
 
+class RequestTester {
+  private app;
+
+  constructor(routes: Array<ZemiRoute>) {
+    this.app = express();
+    this.app.use("/", zemi(routes));
+  }
+
+  get(path: string) {
+    return request(this.app).get(path);
+  }
+
+  post(path: string, data: object) {
+    return request(this.app).post(path).set("Accept", "application/json").send(data);
+  }
+}
+
 async function testGET(path: string, routes: Array<ZemiRoute>) {
   const app = express();
   app.use("/", zemi(routes));
@@ -43,6 +60,97 @@ function buildBasicPetsRoute(handler: ZemiRequestHandler) {
 }
 
 describe("zemi core functionality can...", () => {
+  test("store allowed responses per rout in ZemiRequest", async () => {
+    const routes: Array<ZemiRoute> = [
+      {
+        name: "pets",
+        path: "/pets",
+        [GET]: {
+          description: "returns all pets",
+          tags: ["pets"],
+          responses: {
+            "200": {
+              description: "successful operation",
+            },
+          },
+          handler: function (request: ZemiRequest, response: ZemiResponse) {
+            response.status(200).json(request.allowedResponseHttpCodes);
+          },
+        },
+        [POST]: {
+          description: "creates a new pet",
+          tags: ["pets"],
+          responses: {
+            "200": {
+              description: "successful operation",
+            },
+            "404": {
+              description: "bad request, cannot complete operation",
+            },
+          },
+          handler: function (request: ZemiRequest, response: ZemiResponse) {
+            response.status(200).json({});
+          },
+        },
+        routes: [
+          {
+            name: "dogsById",
+            path: "/dogs/:dogId",
+            [GET]: {
+              description: "returns all dogs",
+              tags: ["pets", "dogs"],
+              responses: {
+                "200": {
+                  description: "successful operation",
+                },
+                "404": {
+                  description: "pet not found",
+                },
+              },
+              handler: function (request: ZemiRequest, response: ZemiResponse) {
+                response.status(200).json({ id: request.params.id });
+              },
+            },
+          },
+        ],
+      },
+      {
+        name: "petsById",
+        path: "/pets/:id",
+        [GET]: {
+          description: "returns all pets",
+          tags: ["pets"],
+          responses: {
+            "200": {
+              description: "successful operation",
+            },
+            "404": {
+              description: "pet not found",
+            },
+          },
+          handler: function (request: ZemiRequest, response: ZemiResponse) {
+            response.status(200).json({ id: request.params.id });
+          },
+        },
+      },
+    ];
+
+    const response = await new RequestTester(routes).get("/pets");
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual({
+      pets: {
+        get: ["200"],
+        post: ["200", "404"],
+      },
+      "pets-dogsById": {
+        get: ["200", "404"],
+      },
+      petsById: {
+        get: ["200", "404"],
+      },
+    });
+  });
+
   test("create a route from the definition passed to it.", async () => {
     const routes: Array<ZemiRoute> = [
       buildBasicPetsRoute(function (request: ZemiRequest, response: ZemiResponse) {
@@ -315,97 +423,6 @@ describe("zemi core functionality can...", () => {
     });
   });
 
-  test("store allowed responses per rout in ZemiRequest", async () => {
-    const routes: Array<ZemiRoute> = [
-      {
-        name: "pets",
-        path: "/pets",
-        [GET]: {
-          description: "returns all pets",
-          tags: ["pets"],
-          responses: {
-            "200": {
-              description: "successful operation",
-            },
-          },
-          handler: function (request: ZemiRequest, response: ZemiResponse) {
-            response.status(200).json(request.allowedResponseHttpCodes);
-          },
-        },
-        [POST]: {
-          description: "creates a new pet",
-          tags: ["pets"],
-          responses: {
-            "200": {
-              description: "successful operation",
-            },
-            "404": {
-              description: "bad request, cannot complete operation",
-            },
-          },
-          handler: function (request: ZemiRequest, response: ZemiResponse) {
-            response.status(200).json({});
-          },
-        },
-        routes: [
-          {
-            name: "dogsById",
-            path: "/dogs/:dogId",
-            [GET]: {
-              description: "returns all dogs",
-              tags: ["pets", "dogs"],
-              responses: {
-                "200": {
-                  description: "successful operation",
-                },
-                "404": {
-                  description: "pet not found",
-                },
-              },
-              handler: function (request: ZemiRequest, response: ZemiResponse) {
-                response.status(200).json({ id: request.params.id });
-              },
-            },
-          },
-        ],
-      },
-      {
-        name: "petsById",
-        path: "/pets/:id",
-        [GET]: {
-          description: "returns all pets",
-          tags: ["pets"],
-          responses: {
-            "200": {
-              description: "successful operation",
-            },
-            "404": {
-              description: "pet not found",
-            },
-          },
-          handler: function (request: ZemiRequest, response: ZemiResponse) {
-            response.status(200).json({ id: request.params.id });
-          },
-        },
-      },
-    ];
-
-    const response = await testGET("/pets", routes);
-    expect(response.status).toEqual(200);
-    expect(response.body).toEqual({
-      pets: {
-        get: ["200"],
-        post: ["200", "404"],
-      },
-      "pets-dogsById": {
-        get: ["200", "404"],
-      },
-      petsById: {
-        get: ["200", "404"],
-      },
-    });
-  });
-
   test("correctly build paths for defined-routes when object being access by nested routes", async () => {
     const petsHandler = function (request: ZemiRequest, response: ZemiResponse) {
       const { routeDefinitions } = request;
@@ -504,6 +521,47 @@ describe("zemi core functionality can...", () => {
     const response = await testGET("/pets/tigers", routes);
     expect(response.body.routeDefinition.name).toEqual("pets-cats-tigers");
     expect(response.body.routeDefinition.path).toEqual("/pets/cats/tigers");
+  });
+
+  test("child routes get defined before current route", async () => {
+    const routes: Array<ZemiRoute> = [
+      {
+        name: "pets",
+        path: "/pets",
+        routes: [
+          {
+            name: "petsById",
+            path: "/:id",
+            [GET]: {
+              handler: function (request: Request, response: Response) {
+                const id = request.params.id;
+                response.status(200).json({ id, name: "Boomer" });
+              },
+            },
+            routes: [
+              {
+                name: "petsByIdWithDetails",
+                path: "/details",
+                [GET]: {
+                  handler: function (request: Request, response: Response) {
+                    const id = request.params.id;
+                    response.status(200).json({ id, details: "Fun dog" });
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const responseIdRoute = await new RequestTester(routes).get("/pets/2");
+    const responseIdDetailsRoute = await new RequestTester(routes).get("/pets/2/details");
+
+    expect(responseIdRoute.body.id).toEqual("2");
+    expect(responseIdRoute.body.name).toEqual("Boomer");
+    expect(responseIdDetailsRoute.body.id).toEqual("2");
+    expect(responseIdDetailsRoute.body.details).toEqual("Fun dog");
   });
 });
 

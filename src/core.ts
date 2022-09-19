@@ -24,13 +24,16 @@ import {
  * @returns {Router} - A router with all ZemiRoutes built into it.
  * @type{(routes: Array<ZemiRoute>, router: Router)=> Router}
  */
+let allowedResponseHttpCodes = null;
 export default function Zemi(
   routes: Array<ZemiRoute>,
   router: Router = Router({ mergeParams: true }),
   __routeDefinitions: Record<string, ZemiRouteDefinition> = buildRouteDefinitions(routes),
   __parentPath?: string
 ): Router {
-  const allowedResponseHttpCodes = buildResponsesPerNamedRoute(routes);
+  if (allowedResponseHttpCodes === null) {
+    allowedResponseHttpCodes = buildResponsesPerNamedRoute(routes);
+  }
   router.use(function (request: ZemiRequest, response: ZemiResponse, next: NextFunction) {
     request.routeDefinitions = __routeDefinitions;
     request.allowedResponseHttpCodes = allowedResponseHttpCodes;
@@ -50,12 +53,9 @@ export default function Zemi(
 
     const methods = Object.values(ZemiMethod);
     methods.forEach((method: string) => {
+      route.routes && router.use(path, Zemi(route.routes, router, __routeDefinitions, fullPath));
       const handlerDefinition: ZemiHandlerDefinition = route[method];
       if (handlerDefinition && handlerDefinition.handler) {
-        // const routeDef: ZemiRouteDefinition = buildRouteDefinition(
-        //   path,
-        //   route.name
-        // );
         const routeDef: ZemiRouteDefinition = Object.keys(__routeDefinitions)
           .map((rdk: string) => __routeDefinitions[rdk])
           .filter((rd: ZemiRouteDefinition) => rd.path === fullPath)[0];
@@ -65,8 +65,6 @@ export default function Zemi(
         );
       }
     });
-
-    route.routes && router.use(path, Zemi(route.routes, router, __routeDefinitions, fullPath));
   });
 
   return router;
