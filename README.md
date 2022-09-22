@@ -13,6 +13,8 @@
 
 <br>
 
+:warning: **Zemi is in an <u>EXPERIMENTAL STATE</u>** :warning:
+
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
 Features:
