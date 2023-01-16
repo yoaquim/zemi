@@ -243,11 +243,11 @@ describe("zemi core functionality can...", () => {
     const routes: Array<ZemiRoute> = [
       {
         name: "pets",
-        path: "/pets/",
+        path: "/pets",
         routes: [
           {
             name: "dogs",
-            path: "/dogs/",
+            path: "/dogs",
             [GET]: function (request: Request, response: Response) {
               response.status(200).json({ dogs: ["Kali", "Ahkila"] });
             },
@@ -412,7 +412,7 @@ describe("zemi core functionality can...", () => {
       },
     ];
 
-    const response = await testGET("/pets/tigers", routes);
+    const response = await testGET("/pets/cats/tigers", routes);
     expect(response.body.routeDefinition.name).toEqual("pets-cats-tigers");
     expect(response.body.routeDefinition.path).toEqual("/pets/cats/tigers");
   });
