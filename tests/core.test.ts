@@ -26,14 +26,6 @@ class RequestTester {
   post(path: string, data: object) {
     return request(this.app).post(path).set("Accept", "application/json").send(data);
   }
-
-  put(path: string, data: object) {
-    return request(this.app).put(path).set("Accept", "application/json").send(data);
-  }
-
-  del(path: string, data: object) {
-    return request(this.app).del(path).set("Accept", "application/json").send(data);
-  }
 }
 
 async function testGET(path: string, routes: Array<ZemiRoute>) {
@@ -66,6 +58,16 @@ function buildBasicPetsRoute(handler: ZemiRequestHandler) {
   return buildRoute("pets", "/pets", GET, handler);
 }
 
+function basicIdResponse(request, response, payload: object) {
+  const id = request.params.id;
+  const data = Object.assign({}, { id }, payload);
+  response.status(200).json(data);
+}
+
+function basicResponse(request, response, payload: object) {
+  response.status(200).json(payload);
+}
+
 describe("zemi core functionality can...", () => {
   test("create a route from the definition passed to it.", async () => {
     const routes: Array<ZemiRoute> = [
@@ -81,11 +83,7 @@ describe("zemi core functionality can...", () => {
   test("access params defined in the path via the request.", async () => {
     const routes: Array<ZemiRoute> = [
       buildRoute("petsById", "/pets/:id", GET, function (request: Request, response: Response) {
-        const id = request.params.id;
-        response.status(200).json({
-          id,
-          dogs: ["Kali", "Ahkila"],
-        });
+        basicIdResponse(request, response, { dogs: ["Kali", "Ahkila"] });
       }),
     ];
 
@@ -129,7 +127,7 @@ describe("zemi core functionality can...", () => {
             name: "cats",
             path: "/cats",
             [GET]: function (request: Request, response: Response) {
-              response.status(200).json({ data: ["Fufu", "Meow"] });
+              basicResponse(request, response, { data: ["Fufu", "Meow"] });
             },
           },
         ],
@@ -162,7 +160,7 @@ describe("zemi core functionality can...", () => {
             name: "dogs",
             path: "/dogs",
             [GET]: function (request: Request, response: Response) {
-              response.status(200).json({
+              basicResponse(request, response, {
                 parent_id: request.params.id,
                 data: ["Kali", "Ahkila"],
               });
@@ -185,7 +183,7 @@ describe("zemi core functionality can...", () => {
         path: "/new-pet",
         [POST]: function (request: Request, response: Response) {
           const { new_pet } = request.body;
-          response.status(200).json({ new_pet });
+          basicResponse(request, response, { new_pet });
         },
       },
     ];
@@ -203,7 +201,7 @@ describe("zemi core functionality can...", () => {
         [POST]: function (request: Request, response: Response) {
           const { new_pet } = request.body;
           const { id } = request.params;
-          response.status(200).json({ new_pet, id });
+          basicResponse(request, response, { new_pet, id });
         },
       },
     ];
@@ -427,16 +425,14 @@ describe("zemi core functionality can...", () => {
             name: "petsById",
             path: "/:id",
             [GET]: function (request: Request, response: Response) {
-              const id = request.params.id;
-              response.status(200).json({ id, name: "Boomer" });
+              basicIdResponse(request, response, { name: "Boomer" });
             },
             routes: [
               {
                 name: "petsByIdWithDetails",
                 path: "/details",
                 [GET]: function (request: Request, response: Response) {
-                  const id = request.params.id;
-                  response.status(200).json({ id, details: "Fun dog" });
+                  basicIdResponse(request, response, { details: "Fun dog" });
                 },
               },
             ],
