@@ -1,6 +1,6 @@
 # zemi
 
-[![Github Build](https://github.com/yoaquim/zemi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yoaquim/zemi/actions/workflows/ci.yml)
+[![build](https://github.com/yoaquim/zemi/actions/workflows/ci.yml/badge.svg)](https://github.com/yoaquim/zemi/actions/workflows/ci.yml)
 [![Code Climate Coverage](https://codeclimate.com/github/yoaquim/zemi/badges/coverage.svg)](https://codeclimate.com/github/yoaquim/zemi/coverage)
 [![Code Climate Maintainability](https://codeclimate.com/github/yoaquim/zemi/badges/gpa.svg)](https://codeclimate.com/github/yoaquim/zemi)
 [![Snyk.io Vulnerabilities](https://snyk.io/test/github/yoaquim/zemi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/yoaquim/zemi?targetFile=package.json)
@@ -12,8 +12,6 @@
 [![License](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
 
 <br>
-
-:warning: **Zemi is in an <u>EXPERIMENTAL STATE</u>** :warning:
 
 zemi is a [data-driven](#data-driven) routing library for [Express](https://expressjs.com/), built with Typescript.
 
