@@ -56,7 +56,19 @@ Assume you have the following functions defined: `petsHandler`, `dogBreedHandler
 ```ts
 const petsHandler = (request: ZemiRequest, response: ZemiResponse) => {
   // do something with this request and respond
-  response.status(200).json({ pets: ["dogs", "cats", "rabbits"] });
+  response.status(200).json({ pets: ["dogs", "cats"] });
+};
+
+const dogBreedHandler = (request: ZemiRequest, response: ZemiResponse) => {
+   //...
+};
+
+const dogBreedsIdHandler = (request: ZemiRequest, response: ZemiResponse) => {
+   //...
+};
+
+const catsByIdHandler = (request: ZemiRequest, response: ZemiResponse) => {
+   //...
 };
 ```
 
@@ -66,33 +78,33 @@ Then the following code:
 import express from "express";
 import zemi, { ZemiRoute, ZemiMethod } from "zemi";
 
-const { GET } = ZemiMethod
+const { GET } = ZemiMethod;
 
 const routes: Array<ZemiRoute> = [
   {
     name: "pets",
     path: "/pets",
-    [GET]: { handler: petsHandler },
+    [GET]: petsHandler,
     routes: [
       {
         name: "dogBreeds",
         path: "/dogs/:breed",
-        [GET]: { handler: dogBreedHandler },
+        [GET]: dogBreedHandler,
         routes: [
           {
             name: "dogsByBreedById",
             path: "/:id",
-            [GET]: { handler: dogBreedsIdHandler },
-          },
-        ],
+            [GET]: dogBreedsIdHandler
+          }
+        ]
       },
       {
         name: "catsById",
         path: "/cats/:id",
-        [GET]: { handler: catsByIdHandler },
-      },
-    ],
-  },
+        [GET]: catsByIdHandler
+      }
+    ]
+  }
 ];
 
 const app = express();
@@ -123,7 +135,7 @@ All route-definitions are named (index-accessible) and follow the same naming co
 Each route-definition contains the name, path, and path-parameters (if present) of the route.
 It also contains a reverse function which — when invoked with an object mapping path-parameters to values — will return the interpolated path with values.
 
-E.g. the handler:
+E.g. a handler like this:
 
 ```ts
 import { ZemiRequest, ZemiResponse, ZemiRouteDefinition } from "zemi";
@@ -167,12 +179,12 @@ const routes: Array<ZemiRoute> = [
   {
     name: "pets",
     path: "/pets",
-    [GET]: { handler: petsHandler },
+    [GET]: petsHandler,
     routes: [
       {
         name: "dogBreeds",
         path: "/dogs/:breed",
-        [GET]: { handler: dogBreedHandler },
+        [GET]: dogBreedHandler,
         middleware: [
           function logRouteDefs(request: ZemiRequest, response: ZemiResponse, next: NextFunction) {
             console.log(JSON.stringify(request.routeDefinitions));
@@ -183,17 +195,17 @@ const routes: Array<ZemiRoute> = [
           {
             name: "dogsByBreedById",
             path: "/:id",
-            [GET]: { handler: dogBreedsIdHandler },
-          },
-        ],
+            [GET]: dogBreedsIdHandler
+          }
+        ]
       },
       {
         name: "catsById",
         path: "/cats/:id",
-        [GET]: { handler: catsByIdHandler },
-      },
-    ],
-  },
+        [GET]: { handler: catsByIdHandler }
+      }
+    ]
+  }
 ];
 ```
 
@@ -212,36 +224,36 @@ const routes: Array<ZemiRoute> = [
   {
     name: "pets",
     path: "/pets",
-    [GET]: { handler: petsHandler },
+    [GET]: petsHandler,
     routes: [
       {
         name: "dogBreeds",
         path: "/dogs/:breed",
-        [GET]: { handler: dogBreedHandler },
+        [GET]: dogBreedHandler,
         routes: [
           {
             name: "dogsByBreedById",
             path: "/:id",
-            [GET]: { handler: dogBreedsIdHandler },
+            [GET]: dogBreedsIdHandler,
             routes: [
               {
                 name: "dogsByBreedByIdDetailsSection",
                 path: "/details/:section",
-                [GET]: { handler: dogBreedsIdDetailsSectionHandler },
+                [GET]: dogBreedsIdDetailsSectionHandler,
                 routes: [
                   {
                     name: "newDogsByBreedByIdDetailsSection",
                     path: "/new",
-                    [POST]: { handler: newDogsByBreedByIdDetailsSectionHandler },
+                    [POST]: newDogsByBreedByIdDetailsSectionHandler
                   }
                 ]
-              },
+              }
             ]
-          },
-        ],
+          }
+        ]
       }
-    ],
-  },
+    ]
+  }
 ];
 ```
 
