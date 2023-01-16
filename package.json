@@ -3,8 +3,14 @@
   "version": "1.4.0",
   "description": "zemi is a data-driven and reverse-routing library for Express.",
   "keywords": [
+    "api",
+    "rest",
+    "middleware",
+    "express",
+    "expressjs",
     "routing",
     "reverse-routing",
+    "reverse-routes",
     "data-driven",
     "data-driven-routing",
     "router"
