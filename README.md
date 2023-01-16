@@ -346,9 +346,11 @@ Examples are available in the [examples](https://github.com/yoaquim/zemi/blob/ma
 
 2. [With Middleware](https://github.com/yoaquim/zemi/blob/main/examples/with-middleware.ts)
 
-3. [Using Reverse Routing](https://github.com/yoaquim/zemi/blob/main/examples/using-reverse-routing.ts)
+3. [Using Named Routes For Redirects](https://github.com/yoaquim/zemi/blob/main/examples/using-named-routes-for-redirect.ts)
+ 
+4. [Using Reverse Routing](https://github.com/yoaquim/zemi/blob/main/examples/using-reverse-routing.ts)
 
-4. [With Param Inheritance from Parent Routes](https://github.com/yoaquim/zemi/blob/main/examples/nested-route-param-inheritance.ts)
+5. [With Param Inheritance from Parent Routes](https://github.com/yoaquim/zemi/blob/main/examples/nested-route-param-inheritance.ts)
 
 <br>
 

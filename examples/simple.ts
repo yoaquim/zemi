@@ -1,5 +1,5 @@
 import express from "express";
-import zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
+import Zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
 
 const { GET } = ZemiMethod;
 
@@ -19,17 +19,21 @@ const routes: Array<ZemiRoute> = [
   {
     name: "pets",
     path: "/pets",
-    [GET]: { handler: petsHandler },
+    [GET]: petsHandler,
     routes: [
       {
         name: "dogs",
         path: "/dogs",
-        [GET]: { handler: dogsHandler },
+        // Note that you can also use `get` as the function's key
+        // Really, any supported ZemiMethod's string value will work
+        // (e.g. 'post', 'put', etc.)
+        // Zemi provides those methods to be more explicit in what it supports
+        get: dogsHandler,
       },
       {
         name: "cats",
         path: "/cats",
-        [GET]: { handler: catsHandler },
+        [GET]: catsHandler,
       },
     ],
   },
@@ -37,5 +41,5 @@ const routes: Array<ZemiRoute> = [
 
 const app = express();
 app.use(express.json());
-app.use("/", zemi(routes));
+app.use("/", Zemi(routes));
 app.listen(8000, (): void => console.log(`----- SERVER START -----`));

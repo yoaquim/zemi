@@ -1,8 +1,13 @@
 import express from "express";
-import zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
+import Zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
 
 const { GET } = ZemiMethod;
 
+const DOGS: Record<string, Array<string>> = {
+  corgi: ["Ash", "Brock", "Misty"],
+  labrador: ['"Fred","Barney","Wilma"'],
+  poodle: ["Shaggy", "Scoob"],
+};
 const petsHandler = function (request: ZemiRequest, response: ZemiResponse) {
   response.status(200).json({ pets: ["dogs", "cats"] });
 };
@@ -11,31 +16,16 @@ const dogsHandler = function (request: ZemiRequest, response: ZemiResponse) {
   response.status(200).json({ dogs: ["corgi", "labrador", "poodle"] });
 };
 
-const dogsBreedHandler = function (
-  request: ZemiRequest,
-  response: ZemiResponse
-) {
-  const dogs: Record<string, Array<string>> = {
-    corgi: ["Ash", "Brock", "Misty"],
-    labrador: ['"Fred","Barney","Wilma"'],
-    poodle: ["Shaggy", "Scoob"],
-  };
+const dogsBreedHandler = function (request: ZemiRequest, response: ZemiResponse) {
   const { breed } = request.params;
-  response.status(200).json({ result: dogs[breed] });
+  response.status(200).json({ result: DOGS[breed] });
 };
 
-const dogsBreedByIdHandler = function (
-  request: ZemiRequest,
-  response: ZemiResponse
-) {
-  const dogs: Record<string, Array<string>> = {
-    corgi: ["Ash", "Brock", "Misty"],
-    labrador: ['"Fred","Barney","Wilma"'],
-    poodle: ["Shaggy", "Scoob"],
-  };
+const dogsBreedByIdHandler = function (request: ZemiRequest, response: ZemiResponse) {
+  // Here, we're accessing the `breed` param, which was specified in the parent route
   const { breed, id } = request.params;
   const i: number = parseInt(id, 10);
-  const result = dogs[breed] && dogs[breed][i];
+  const result = DOGS[breed] && DOGS[breed][i];
   response.status(200).json({ result });
 };
 
@@ -43,22 +33,22 @@ const routes: Array<ZemiRoute> = [
   {
     name: "pets",
     path: "/pets",
-    [GET]: { handler: petsHandler },
+    [GET]: petsHandler,
     routes: [
       {
         name: "dogs",
         path: "/dogs",
-        [GET]: { handler: dogsHandler },
+        [GET]: dogsHandler,
         routes: [
           {
             name: "dogsByBreeds",
             path: "/dogs/:breed",
-            [GET]: { handler: dogsBreedHandler },
+            [GET]: dogsBreedHandler,
             routes: [
               {
                 name: "dogsByBreedById",
                 path: "/:id",
-                [GET]: { handler: dogsBreedByIdHandler },
+                [GET]: dogsBreedByIdHandler,
               },
             ],
           },
@@ -70,5 +60,5 @@ const routes: Array<ZemiRoute> = [
 
 const app = express();
 app.use(express.json());
-app.use("/", zemi(routes));
+app.use("/", Zemi(routes));
 app.listen(8000, (): void => console.log(`----- SERVER START -----`));

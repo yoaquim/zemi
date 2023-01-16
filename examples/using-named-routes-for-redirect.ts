@@ -1,5 +1,5 @@
-import express, { NextFunction } from "express";
-import Zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
+import express from "express";
+import zemi, { ZemiMethod, ZemiRequest, ZemiResponse, ZemiRoute } from "zemi";
 
 const { GET } = ZemiMethod;
 
@@ -15,18 +15,20 @@ const catsHandler = function (request: ZemiRequest, response: ZemiResponse) {
   response.status(200).json({ cats: ["persian", "bengal", "abyssinian"] });
 };
 
+const tigersHandler = function (request: ZemiRequest, response: ZemiResponse) {
+  // Tigers are just cats, so redirect to the path specified in the
+  // route definition named `pets-cats` (i.e. "/pets/cats")
+
+  // This prevents hardcoding paths to handler logic and lets you easily
+  // change actual paths without breaking your app
+  const { path } = request.routeDefinitions["pets-cats"];
+  response.redirect(path);
+};
+
 const routes: Array<ZemiRoute> = [
   {
     name: "pets",
     path: "/pets",
-    // This middleware will get applied to the current route and all its nested routes
-    middleware: [
-      function (request: ZemiRequest, response: ZemiResponse, next: NextFunction) {
-        const { routeDefinitions } = request;
-        console.log(JSON.stringify(routeDefinitions));
-        next();
-      },
-    ],
     [GET]: petsHandler,
     routes: [
       {
@@ -39,11 +41,16 @@ const routes: Array<ZemiRoute> = [
         path: "/cats",
         [GET]: catsHandler,
       },
+      {
+        name: "tigers",
+        path: "/tigers",
+        [GET]: tigersHandler,
+      },
     ],
   },
 ];
 
 const app = express();
 app.use(express.json());
-app.use("/", Zemi(routes));
+app.use("/", zemi(routes));
 app.listen(8000, (): void => console.log(`----- SERVER START -----`));
