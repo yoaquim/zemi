@@ -9,6 +9,17 @@ import {
 } from ".";
 import { buildRouteDefinitions } from "./helpers";
 
+/**
+ * Recursive. Takes the ZemiRoutes passed in and returns an Express router
+ * (either created or specified as the second argument) with each ZemiRoute as
+ * an express route under it.
+ * @param routes {Array<ZemiRoute>} - An array of ZemiRoutes.
+ * @param [router] {Router} - An Express router to be used for adding ZemiRoutes; router is auto-created if not passed in.
+ * @param [__routeDefinitions] {Record<string, ZemiRouteDefinition>} - The route definitions for this zemi function. Initialized if not passed-in.
+ * @param [__parentPath] {string} - Path of parent, use to identify current path definition.
+ * @returns {Router} - A router with all ZemiRoutes built into it.
+ * @type{(routes: Array<ZemiRoute>, router: Router)=> Router}
+ */
 function Zemi(
   routes: Array<ZemiRoute>,
   router: Router = Router({ mergeParams: true }),
