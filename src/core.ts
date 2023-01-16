@@ -49,7 +49,7 @@ function Zemi(
     // For each child route, call Zemi on it, so it can recursively build that route
     // and all it's children. This NEEDS to happen before the current route gets defined,
     // since child routes are more specific.
-    route.routes && router.use(path, Zemi(route.routes, router, __routeDefinitions, fullPath));
+    route.routes && router.use(fullPath, Zemi(route.routes, router, __routeDefinitions, fullPath));
 
     // For each Zemi HTTP method...
     const methods = Object.values(ZemiMethod);
@@ -61,8 +61,10 @@ function Zemi(
           .map((rdk: string) => __routeDefinitions[rdk])
           .filter((rd: ZemiRouteDefinition) => rd.path === fullPath)[0];
         // and create a route in ExpressJS
-        router[method](path, (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
-          handler(request, response, next, routeDef)
+        router[method](
+          fullPath,
+          (request: ZemiRequest, response: ZemiResponse, next: NextFunction) =>
+            handler(request, response, next, routeDef)
         );
       }
     });
