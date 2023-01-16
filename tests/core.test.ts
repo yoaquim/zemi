@@ -1,14 +1,13 @@
 import express, { NextFunction, Request, Response } from "express";
 import request from "supertest";
-import {
-  ZemiRoute,
+import Zemi, {
   ZemiMethod,
   ZemiRequest,
-  ZemiResponse,
-  ZemiRouteDefinition,
   ZemiRequestHandler,
+  ZemiResponse,
+  ZemiRoute,
+  ZemiRouteDefinition,
 } from "../src";
-import zemi from "../src/core";
 
 const { GET, POST } = ZemiMethod;
 
@@ -17,7 +16,7 @@ class RequestTester {
 
   constructor(routes: Array<ZemiRoute>) {
     this.app = express();
-    this.app.use("/", zemi(routes));
+    this.app.use("/", Zemi(routes));
   }
 
   get(path: string) {
@@ -27,18 +26,26 @@ class RequestTester {
   post(path: string, data: object) {
     return request(this.app).post(path).set("Accept", "application/json").send(data);
   }
+
+  put(path: string, data: object) {
+    return request(this.app).put(path).set("Accept", "application/json").send(data);
+  }
+
+  del(path: string, data: object) {
+    return request(this.app).del(path).set("Accept", "application/json").send(data);
+  }
 }
 
 async function testGET(path: string, routes: Array<ZemiRoute>) {
   const app = express();
-  app.use("/", zemi(routes));
+  app.use("/", Zemi(routes));
   return request(app).get(path);
 }
 
 async function testPOST(path: string, data: object, routes: Array<ZemiRoute>) {
   const app = express();
   app.use(express.json());
-  app.use("/", zemi(routes));
+  app.use("/", Zemi(routes));
   return request(app).post(path).set("Accept", "application/json").send(data);
 }
 
@@ -51,7 +58,7 @@ function buildRoute(
   return {
     name,
     path,
-    [method]: { handler },
+    [method]: handler,
   };
 }
 
@@ -60,97 +67,6 @@ function buildBasicPetsRoute(handler: ZemiRequestHandler) {
 }
 
 describe("zemi core functionality can...", () => {
-  test("store allowed responses per rout in ZemiRequest", async () => {
-    const routes: Array<ZemiRoute> = [
-      {
-        name: "pets",
-        path: "/pets",
-        [GET]: {
-          description: "returns all pets",
-          tags: ["pets"],
-          responses: {
-            "200": {
-              description: "successful operation",
-            },
-          },
-          handler: function (request: ZemiRequest, response: ZemiResponse) {
-            response.status(200).json(request.allowedResponseHttpCodes);
-          },
-        },
-        [POST]: {
-          description: "creates a new pet",
-          tags: ["pets"],
-          responses: {
-            "200": {
-              description: "successful operation",
-            },
-            "404": {
-              description: "bad request, cannot complete operation",
-            },
-          },
-          handler: function (request: ZemiRequest, response: ZemiResponse) {
-            response.status(200).json({});
-          },
-        },
-        routes: [
-          {
-            name: "dogsById",
-            path: "/dogs/:dogId",
-            [GET]: {
-              description: "returns all dogs",
-              tags: ["pets", "dogs"],
-              responses: {
-                "200": {
-                  description: "successful operation",
-                },
-                "404": {
-                  description: "pet not found",
-                },
-              },
-              handler: function (request: ZemiRequest, response: ZemiResponse) {
-                response.status(200).json({ id: request.params.id });
-              },
-            },
-          },
-        ],
-      },
-      {
-        name: "petsById",
-        path: "/pets/:id",
-        [GET]: {
-          description: "returns all pets",
-          tags: ["pets"],
-          responses: {
-            "200": {
-              description: "successful operation",
-            },
-            "404": {
-              description: "pet not found",
-            },
-          },
-          handler: function (request: ZemiRequest, response: ZemiResponse) {
-            response.status(200).json({ id: request.params.id });
-          },
-        },
-      },
-    ];
-
-    const response = await new RequestTester(routes).get("/pets");
-    expect(response.status).toEqual(200);
-    expect(response.body).toEqual({
-      pets: {
-        get: ["200"],
-        post: ["200", "404"],
-      },
-      "pets-dogsById": {
-        get: ["200", "404"],
-      },
-      petsById: {
-        get: ["200", "404"],
-      },
-    });
-  });
-
   test("create a route from the definition passed to it.", async () => {
     const routes: Array<ZemiRoute> = [
       buildBasicPetsRoute(function (request: ZemiRequest, response: ZemiResponse) {
@@ -198,28 +114,22 @@ describe("zemi core functionality can...", () => {
       {
         name: "pets",
         path: "/pets",
-        [GET]: {
-          handler: function (request: Request, response: Response) {
-            response.status(200).json({ pets: ["dogs", "cats"] });
-          },
+        [GET]: function (request: Request, response: Response) {
+          response.status(200).json({ pets: ["dogs", "cats"] });
         },
         routes: [
           {
             name: "dogs",
             path: "/dogs",
-            [GET]: {
-              handler: function (request: Request, response: Response) {
-                response.status(200).json({ data: ["Kali", "Ahkila"] });
-              },
+            [GET]: function (request: Request, response: Response) {
+              response.status(200).json({ data: ["Kali", "Ahkila"] });
             },
           },
           {
             name: "cats",
             path: "/cats",
-            [GET]: {
-              handler: function (request: Request, response: Response) {
-                response.status(200).json({ data: ["Fufu", "Meow"] });
-              },
+            [GET]: function (request: Request, response: Response) {
+              response.status(200).json({ data: ["Fufu", "Meow"] });
             },
           },
         ],
@@ -244,22 +154,18 @@ describe("zemi core functionality can...", () => {
       {
         name: "petsById",
         path: "/pets/:id",
-        [GET]: {
-          handler: function (request: Request, response: Response) {
-            response.status(200).json({ pets: ["dogs", "cats"] });
-          },
+        [GET]: function (request: Request, response: Response) {
+          response.status(200).json({ pets: ["dogs", "cats"] });
         },
         routes: [
           {
             name: "dogs",
             path: "/dogs",
-            [GET]: {
-              handler: function (request: Request, response: Response) {
-                response.status(200).json({
-                  parent_id: request.params.id,
-                  data: ["Kali", "Ahkila"],
-                });
-              },
+            [GET]: function (request: Request, response: Response) {
+              response.status(200).json({
+                parent_id: request.params.id,
+                data: ["Kali", "Ahkila"],
+              });
             },
           },
         ],
@@ -277,11 +183,9 @@ describe("zemi core functionality can...", () => {
       {
         name: "newPet",
         path: "/new-pet",
-        [POST]: {
-          handler: function (request: Request, response: Response) {
-            const { new_pet } = request.body;
-            response.status(200).json({ new_pet });
-          },
+        [POST]: function (request: Request, response: Response) {
+          const { new_pet } = request.body;
+          response.status(200).json({ new_pet });
         },
       },
     ];
@@ -296,12 +200,10 @@ describe("zemi core functionality can...", () => {
       {
         name: "newPetById",
         path: "/new-pet/:id",
-        [POST]: {
-          handler: function (request: Request, response: Response) {
-            const { new_pet } = request.body;
-            const { id } = request.params;
-            response.status(200).json({ new_pet, id });
-          },
+        [POST]: function (request: Request, response: Response) {
+          const { new_pet } = request.body;
+          const { id } = request.params;
+          response.status(200).json({ new_pet, id });
         },
       },
     ];
@@ -317,17 +219,13 @@ describe("zemi core functionality can...", () => {
       {
         name: "newItem",
         path: "/new-item",
-        [POST]: {
-          handler: function (request: Request, response: Response) {
-            const { new_item } = request.body;
-            response.status(200).json({ new_item });
-          },
+        [POST]: function (request: Request, response: Response) {
+          const { new_item } = request.body;
+          response.status(200).json({ new_item });
         },
-        [GET]: {
-          handler: function (request: Request, response: Response) {
-            const { id } = request.params;
-            response.status(200).json({ id, message: "items" });
-          },
+        [GET]: function (request: Request, response: Response) {
+          const { id } = request.params;
+          response.status(200).json({ id, message: "items" });
         },
       },
     ];
@@ -350,10 +248,8 @@ describe("zemi core functionality can...", () => {
           {
             name: "dogs",
             path: "/dogs/",
-            [GET]: {
-              handler: function (request: Request, response: Response) {
-                response.status(200).json({ dogs: ["Kali", "Ahkila"] });
-              },
+            [GET]: function (request: Request, response: Response) {
+              response.status(200).json({ dogs: ["Kali", "Ahkila"] });
             },
           },
         ],
@@ -373,10 +269,8 @@ describe("zemi core functionality can...", () => {
       {
         name: "pets",
         path: "/pets/:id",
-        [GET]: {
-          handler: function (request: ZemiRequest, response: Response) {
-            response.status(200).json(request.routeDefinitions);
-          },
+        [GET]: function (request: ZemiRequest, response: Response) {
+          response.status(200).json(request.routeDefinitions);
         },
         routes: [
           {
@@ -448,22 +342,22 @@ describe("zemi core functionality can...", () => {
       {
         name: "pets",
         path: "/pets",
-        [GET]: { handler: petsHandler },
+        [GET]: petsHandler,
         routes: [
           {
             name: "dogs",
             path: "/dogs",
-            [GET]: { handler: dogsHandler },
+            [GET]: dogsHandler,
           },
           {
             name: "cats",
             path: "/cats",
-            [GET]: { handler: catsHandler },
+            [GET]: catsHandler,
           },
           {
             name: "tigers",
             path: "/tigers",
-            [GET]: { handler: tigersHandler },
+            [GET]: tigersHandler,
           },
         ],
       },
@@ -510,7 +404,7 @@ describe("zemi core functionality can...", () => {
               {
                 name: "tigers",
                 path: "/tigers",
-                [GET]: { handler: tigersHandler },
+                [GET]: tigersHandler,
               },
             ],
           },
@@ -532,21 +426,17 @@ describe("zemi core functionality can...", () => {
           {
             name: "petsById",
             path: "/:id",
-            [GET]: {
-              handler: function (request: Request, response: Response) {
-                const id = request.params.id;
-                response.status(200).json({ id, name: "Boomer" });
-              },
+            [GET]: function (request: Request, response: Response) {
+              const id = request.params.id;
+              response.status(200).json({ id, name: "Boomer" });
             },
             routes: [
               {
                 name: "petsByIdWithDetails",
                 path: "/details",
-                [GET]: {
-                  handler: function (request: Request, response: Response) {
-                    const id = request.params.id;
-                    response.status(200).json({ id, details: "Fun dog" });
-                  },
+                [GET]: function (request: Request, response: Response) {
+                  const id = request.params.id;
+                  response.status(200).json({ id, details: "Fun dog" });
                 },
               },
             ],
@@ -583,10 +473,8 @@ describe("zemi middleware functionality can...", () => {
             next();
           },
         ],
-        [GET]: {
-          handler: function (request: Request, response: Response) {
-            response.status(200).json({ pets: ["dogs", "cats"] });
-          },
+        [GET]: function (request: Request, response: Response) {
+          response.status(200).json({ pets: ["dogs", "cats"] });
         },
       },
     ];
