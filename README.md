@@ -38,10 +38,11 @@ Features:
     5. [ZemiRouteDefinition](#zemiroutedefinition)
     6. [ZemiRoute](#zemiroute)
 3. [Examples](#examples)
-    1. [Simple](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
-    2. [With Middleware](https://github.com/yoaquim/zemi/blob/main/examples/with-middleware.ts)
-    3. [Using Reverse Routing](https://github.com/yoaquim/zemi/blob/main/examples/using-reverse-routing.ts)
-    4. [With Param Inheritance from Parent Routes](https://github.com/yoaquim/zemi/blob/main/examples/nested-route-param-inheritance.ts)
+   1. [Simple](https://github.com/yoaquim/zemi/blob/main/examples/simple.ts)
+   2. [With Middleware](https://github.com/yoaquim/zemi/blob/main/examples/with-middleware.ts)
+   3. [Using Named Routes For Redirects](https://github.com/yoaquim/zemi/blob/main/examples/using-named-routes-for-redirect.ts)
+   4. [Using Reverse Routing](https://github.com/yoaquim/zemi/blob/main/examples/using-reverse-routing.ts)
+   5. [With Param Inheritance from Parent Routes](https://github.com/yoaquim/zemi/blob/main/examples/nested-route-param-inheritance.ts)
 4. [Limitations](#limitations)
 
 <br>
