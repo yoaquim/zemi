@@ -39,7 +39,7 @@
     "build": "tsc",
     "start": "tsc && node .",
     "test": "jest",
-    "prettify": "npx prettier --write .",
+    "prettify": "npx prettier --write",
     "cc": "codeclimate analyze",
     "typedoc": "npx typedoc --entryPointStrategy expand ./src/ && open docs/index.html"
   },
