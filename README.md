@@ -337,11 +337,11 @@ Also provides a `reverse` function that, when invoked with an object that has pa
 
 ### `ZemiRoute`
 
-It must be provided a `name: string` and `path: string`; a [`ZemiMethod`](#zemimethod):[`ZemiHandlerDefinition`](#zemihandlerdefinition) needs to be provided if that path should have functionality, but doesn't need to be if the path is just present as a path-prefix for nested routes.
+It must be provided a `name: string` and `path: string`; a [[`ZemiMethod`](#zemimethod)]:[`ZemiRequestHandler`](#zemirequesthandler) needs to be provided if that path should have functionality, but doesn't need to be if the path is just present as a path-prefix for nested routes.
 
 ```
 {
-   [ZemiMethod]: ZemiHandlerDefinition;
+   [ZemiMethod]: ZemiRequestHandler;
    name: string;
    path: string;
    middleware?: Array<RequestHandler>;
