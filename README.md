@@ -7,7 +7,7 @@
 
 [![npm Version](https://img.shields.io/npm/v/zemi?color=137dc2&logo=npm)](https://www.npmjs.com/package/zemi)
 [![Types](https://badgen.net/npm/types/zemi)](https://github.com/yoaquim/zemi/tree/main/src/types)
-[![Dependencies](https://badgen.net/bundlephobia/dependency-count/zemi)](https://github.com/yoaquim/zemi/blob/main/package.json#L27-L30)
+[![Dependencies](https://img.shields.io/badge/dependencies-2-blue)](https://github.com/yoaquim/zemi/blob/main/package.json#L27-L30)
 [![Install Size](https://packagephobia.com/badge?p=zemi)](https://packagephobia.com/result?p=zemi)
 [![License](https://badgen.net/npm/license/zemi)](https://github.com/yoaquim/zemi/blob/main/LICENSE.md)
 
